@@ -215,7 +215,9 @@ class InvitationTests(TestCase):
     def setUp(self):
         self.inv = Invitation.objects.create(duration=86400*5)
         self.invexp = Invitation.objects.create(duration=86400*5)
-
+        import time
+        time.sleep(1)
+        
     def test_invitation(self):
         self.assertEqual(len(self.inv.code), 32)
         self.assertEqual(self.inv.duration, 86400*5)
