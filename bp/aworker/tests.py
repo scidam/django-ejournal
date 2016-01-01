@@ -171,7 +171,7 @@ class IssueTest(TestCase):
         answer2 = Answer.objects.create(reviewer=reviwer, review=rev3)
         p1 = PaperSource.objects.create(issue=self.issue, description='Just empty')
         p2 = PaperSource.objects.create(issue=self.issue, description='Another empty')
-        
+
     def test_issue_completeness(self):
         self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.authors)
