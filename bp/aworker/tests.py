@@ -181,8 +181,8 @@ class IssueTest(TestCase):
         vote2 = Vote.objects.create(editor=editor, vote=False, issue=self.issue)
         vote1.save()
         vote2.save()
-        answer1 = Answer.objects.create(reviewer=reviwer, review=rev1)
-        answer2 = Answer.objects.create(reviewer=reviwer, review=rev3)
+        answer1 = Answer.objects.create(author=author, review=rev1)
+        answer2 = Answer.objects.create(author=author, review=rev3)
         p1 = PaperSource.objects.create(issue=self.issue, description='Just empty')
         p2 = PaperSource.objects.create(issue=self.issue, description='Another empty')
 
