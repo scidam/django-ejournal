@@ -1,13 +1,13 @@
 from django.auth.models import User
 from django.core.exceptions import ValidationError
+from django.core.files.base import ContentFile
 from django.test import TestCase
 from django.utils import timezone
 
-
 from .models import (Article, Invitation, Author,
                      Reviewer, Editor, SciField, Issue,
-                     ArtExtra, Review, PaperSource
-                     Votes)
+                     ArtExtra, Review, PaperSource,
+                     Vote, Answer)
 
 
 class AuthorTest(TestCase):
@@ -143,6 +143,7 @@ class PaperSource(TestCase):
         self.papersource = PaperSource.objects.create()
         self.papersource1 = PaperSource.objects.create(description='new')
         self.papersource2 = PaperSource.objects.create(description='new')
+        self.papersource3 = PaperSource.objects.create(file=ContentFile('new'))
 
     def test_paper_source_completeness(self):
         self.assertIsNone(self.papersource.file)
@@ -150,6 +151,7 @@ class PaperSource(TestCase):
         self.assertIsNotNone(self.papersource.created)
         self.assertIsNone(self.papersource.issue)
         self.assertIsNotNone(self.papersource.hashcode)
+        self.assertFalse(self.papersource.removed)
 
     def test_paper_source_hash_changed(self):
         self.assertNotEqual(self.papersource.hashcode, self.papersource1.hashcode)
@@ -157,6 +159,9 @@ class PaperSource(TestCase):
     def test_paper_source_equal(self):
         self.assertNotEqual(self.papersource1.hashcode, self.papersource2.hashcode)
 
+    def test_paper_with_file(self):
+        self.assertEqual(self.papersource3.hashcode, self.papersource2.hashcode)
+    
 
 class IssueTest(TestCase):
     '''Initially issue is created by the author
