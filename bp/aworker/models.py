@@ -83,7 +83,7 @@ class Invitation(models.Model):
 
     @property
     def is_expired(self):
-        return False if self.created <= timezone.now() <= self.created + datetime.timedelta(seconds=self.duration) else True
+        return False if (self.created <= timezone.now()) and (timezone.now() <= self.created + datetime.timedelta(seconds=self.duration)) else True
  
 class ArtExtra(models.Model):
     pass

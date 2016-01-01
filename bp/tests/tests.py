@@ -51,7 +51,7 @@ class AuthorTest(TestCase):
         self.assertRaises(ValidationError, self.auth2.clean())
 
     def test_author_username(self):
-        self.assertEqual(self.auth1.email, self.auth1.user.username)
+        self.assertEqual(self.auth1.email, self.auth1.user.email)
 
     def test_author_notstaff(self):
         self.assertFalse(self.auth1.user.is_staff)
@@ -204,10 +204,10 @@ class InvitationTests(TestCase):
 
     def setUp(self):
         self.inv = Invitation.objects.create(duration=86400*5)
-        self.invexp = Invitation.objects.create(duration=86400*5)
+        self.invexp = Invitation.objects.create(duration=0)
         import time
         time.sleep(1)
-        
+
     def test_invitation(self):
         self.assertEqual(len(self.inv.code), 32)
         self.assertEqual(self.inv.duration, 86400*5)
