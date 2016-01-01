@@ -6,7 +6,6 @@ from django.utils import timezone
 from .models import Article, Invitation, Author, Reviewer, Editor, SciField, Issue, ArtExtra
 
 
-#Create your tests here.
 class AuthorTest(TestCase):
     '''Basic author behaviour and properties
     '''
@@ -36,7 +35,7 @@ class AuthorTest(TestCase):
                                       organization='',
                                       zipcode='', # use validator
                                       address='',
-                                      city=''
+                                      city='',
                                       role='AU'
                                       )
 
@@ -61,7 +60,29 @@ class AuthorTest(TestCase):
         self.assertFalse(self.auth1.is_editor)
 
 
+class EditorTest(TestCase):
+    '''Basic Editor behaviour'''
 
+    def setUp(self):
+        rev = Author.objects.create(firstname='John', # required
+                                      secondname='Doe',
+                                      thirdname='',
+                                      country_code='US',
+                                      email='some@example.com', # required
+                                      phone='',
+                                      position='',
+                                      organization='',
+                                      zipcode='',
+                                      address='',
+                                      city='',
+                                      role='ED'
+                                      )
+
+    def test_is_author(self):
+        self.assertTrue(self.rev.is_author)
+
+    def test_is_editor(self):
+        self.assertTrue(self.rev.is_editor)
 
 
 class ReviewerTest(TestCase):
@@ -75,10 +96,9 @@ class ArticleTests(TestCase):
                                      published=True,
                                      pub_date=timezone.now(),
                                      authors=Author.objects.create(name='John Doe'),
-                                     extrainfo=ArtExtra.objects.create(),
-                                     
-                               
-                               
+                                     extrainfo=ArtExtra.objects.create()
+                                     )
+
 
 
 class InvitationTests(TestCase):
