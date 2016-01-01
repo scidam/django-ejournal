@@ -136,8 +136,18 @@ class VotesTest(TestCase):
         self.assertIsNotNone(self.date)
 
 
+class PaperSource(TestCase):
+    '''Source of each paper. It is used by the Issue instance.
+    '''
 
-        
+    def setUp(self):
+        self.papersource = PaperSource.objects.create()
+
+    def test_paper_source_completeness(self):
+        self.assertIsNone(self.papersource.file)
+        self.assertIsEqual(self.papersource.description, '')
+        self.assertIsNotNone(self.papersource.created)
+        self.assertIsNone(self.papersource.issue)
 
 class IssueTest(TestCase):
     '''Initially issue is created by the author
@@ -159,7 +169,9 @@ class IssueTest(TestCase):
         vote2.save()
         answer1 = Answer.objects.create(reviewer=reviwer, review=rev1)
         answer2 = Answer.objects.create(reviewer=reviwer, review=rev3)
-
+        p1 = PaperSource.objects.create(issue=self.issue, description='Just empty')
+        p2 = PaperSource.objects.create(issue=self.issue, description='Another empty')
+        
     def test_issue_completeness(self):
         self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.authors)
@@ -168,7 +180,7 @@ class IssueTest(TestCase):
         self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.updated)
         self.assertIsNone(self.issue.pbready) # output paper file
-        
+        self.assertIsNotNone(self.issue.sources)
 
 class ArticleTests(TestCase):
     '''Articles that are already published
