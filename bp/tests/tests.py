@@ -1,13 +1,12 @@
+from aworker.models import (Article, Invitation, Author,
+                     Reviewer, Editor, Issue,
+                     ArtExtra, Review, PaperSource,
+                     Vote, Answer)
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.test import TestCase
 from django.utils import timezone
-
-from .models import (Article, Invitation, Author,
-                     Reviewer, Editor, Issue,
-                     ArtExtra, Review, PaperSource,
-                     Vote, Answer)
 
 
 class AuthorTest(TestCase):
@@ -15,10 +14,10 @@ class AuthorTest(TestCase):
     '''
 
     def setUp(self):
-        auth1 = Author.objects.create(firstname='John', # required
+        self.auth1 = Author.objects.create(firstname='John', # required
                                       secondname='Doe',
                                       thirdname='',
-                                      country_code='US',
+                                      country='US',
                                       email='some@example.com', # required
                                       phone='',
                                       position='',
@@ -29,10 +28,10 @@ class AuthorTest(TestCase):
                                       role='AU'
                                       )
 
-        auth2 = Author.objects.create(firstname='John',
+        self.auth2 = Author.objects.create(firstname='John',
                                       secondname='Doe',
                                       thirdname='',
-                                      country_code='US',
+                                      country='US',
                                       email='some-example.com', # use validator
                                       phone='', # use validator
                                       position='',
@@ -57,9 +56,6 @@ class AuthorTest(TestCase):
     def test_author_notstaff(self):
         self.assertFalse(self.auth1.user.is_staff)
 
-    def test_is_author(self):
-        self.assertTrue(self.auth1.is_author)
-
     def test_is_editor(self):
         self.assertFalse(self.auth1.is_editor)
 
@@ -68,10 +64,10 @@ class EditorTest(TestCase):
     '''Basic Editor behaviour'''
 
     def setUp(self):
-        rev = Author.objects.create(firstname='John', # required
+        self.rev = Author.objects.create(firstname='John', # required
                                       secondname='Doe',
                                       thirdname='',
-                                      country_code='US',
+                                      country='US',
                                       email='some@example.com', # required
                                       phone='',
                                       position='',
@@ -82,19 +78,16 @@ class EditorTest(TestCase):
                                       role='ED'
                                       )
 
-    def test_is_author(self):
-        self.assertTrue(self.rev.is_author)
-
     def test_is_editor(self):
         self.assertTrue(self.rev.is_editor)
 
 
 class ReviewerTest(TestCase):
     def setUp(self):
-        rev = Reviewer.objects.create(firstname='John', # required
+        self.rev = Reviewer.objects.create(firstname='John', # required
                                       secondname='Doe',
                                       thirdname='',
-                                      country_code='US',
+                                      country='US',
                                       email='some@example.com', # required
                                       phone='',
                                       position='',
@@ -104,9 +97,6 @@ class ReviewerTest(TestCase):
                                       city='',
                                       role='RE'
                                       )
-
-    def test_is_author(self):
-        raise NotImplemented
 
     def test_is_editor(self):
         self.assertFalse(self.rev.is_editor)
