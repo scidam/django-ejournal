@@ -149,6 +149,7 @@ class PaperSource(TestCase):
         self.assertIsNotNone(self.papersource.created)
         self.assertIsNone(self.papersource.issue)
 
+
 class IssueTest(TestCase):
     '''Initially issue is created by the author
     '''
@@ -182,9 +183,11 @@ class IssueTest(TestCase):
         self.assertIsNone(self.issue.pbready) # output paper file
         self.assertIsNotNone(self.issue.sources)
 
+
 class ArticleTests(TestCase):
     '''Articles that are already published
     '''
+
     def setUp(self):
         art = Article.objects.create(name='About winds influences on the spiritual life of the clergy?',
                                      published=True,
@@ -193,9 +196,18 @@ class ArticleTests(TestCase):
                                      extrainfo=ArtExtra.objects.create()
                                      )
 
-
-
 class InvitationTests(TestCase):
+
     def setUp(self):
-        invite = Invitation.objects.create()
-        
+        self.inv = Invitation.objects.create(duration=86400*5)
+        self.invexp = Invitation.objects.create(duration=86400*5)
+
+    def test_invitation(self):
+        self.assertEqual(len(self.inv.code), 32)
+        self.assertEqual(self.inv.duration, 86400*5)
+
+    def test_is_expired(self):
+        self.assertFalse(self.inv.is_expired)
+
+    def test_is_expired_true(self):
+        self.assertTrue(self.invexp.is_expired)
