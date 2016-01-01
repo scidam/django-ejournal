@@ -1,11 +1,11 @@
-from django.auth.models import User
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.test import TestCase
 from django.utils import timezone
 
 from .models import (Article, Invitation, Author,
-                     Reviewer, Editor, SciField, Issue,
+                     Reviewer, Editor, Issue,
                      ArtExtra, Review, PaperSource,
                      Vote, Answer)
 
@@ -208,6 +208,7 @@ class ArticleTests(TestCase):
                                      authors=Author.objects.create(name='John Doe'),
                                      extrainfo=ArtExtra.objects.create()
                                      )
+
 
 class InvitationTests(TestCase):
 
