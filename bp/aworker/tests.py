@@ -3,7 +3,10 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
-from .models import Article, Invitation, Author, Reviewer, Editor, SciField, Issue, ArtExtra
+from .models import (Article, Invitation, Author,
+                     Reviewer, Editor, SciField, Issue,
+                     ArtExtra,
+                     Votes)
 
 
 class AuthorTest(TestCase):
@@ -102,11 +105,11 @@ class ReviewerTest(TestCase):
                                       )
 
     def test_is_author(self):
-        pass
+        raise NotImplemented
 
     def test_is_editor(self):
         self.assertFalse(self.rev.is_editor)
-        
+
 
 class ArticleTests(TestCase):
     '''Articles that are already published
