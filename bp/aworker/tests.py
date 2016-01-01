@@ -139,15 +139,23 @@ class VotesTest(TestCase):
 class PaperSource(TestCase):
     '''Source of each paper. It is used by the Issue instance.
     '''
-
     def setUp(self):
         self.papersource = PaperSource.objects.create()
+        self.papersource1 = PaperSource.objects.create(description='new')
+        self.papersource2 = PaperSource.objects.create(description='new')
 
     def test_paper_source_completeness(self):
         self.assertIsNone(self.papersource.file)
         self.assertIsEqual(self.papersource.description, '')
         self.assertIsNotNone(self.papersource.created)
         self.assertIsNone(self.papersource.issue)
+        self.assertIsNotNone(self.papersource.hashcode)
+
+    def test_paper_source_hash_changed(self):
+        self.assertNotEqual(self.papersource.hashcode, self.papersource1.hashcode)
+
+    def test_paper_source_equal(self):
+        self.assertNotEqual(self.papersource1.hashcode, self.papersource2.hashcode)
 
 
 class IssueTest(TestCase):
@@ -180,7 +188,7 @@ class IssueTest(TestCase):
         self.assertIsNotNone(self.issue.answers)
         self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.updated)
-        self.assertIsNone(self.issue.pbready) # output paper file
+        self.assertIsNone(self.issue.paper) # Link to the article instance! output paper
         self.assertIsNotNone(self.issue.sources)
 
 
