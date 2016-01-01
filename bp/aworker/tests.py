@@ -111,6 +111,30 @@ class ReviewerTest(TestCase):
         self.assertFalse(self.rev.is_editor)
 
 
+class VotesTest(TestCase):
+    '''Votes for the issue pending to publish.
+
+    Votes is used by the editorial board staff for pending the issue to publising.
+    '''
+
+    def setUp(self):
+        self.vt = Vote.objects.create(vote=True,
+                                      editor=Editor.objects.create(role='ED'),
+                                      comment='',
+                                      issue=Issue.objects.create()
+                                      )
+
+    def test_vote_completeness(self):
+        '''Vote instance assumed to have the following additional field:
+        date - date of voting
+        '''
+        self.assertIsNotNone(self.vt.editor)
+        self.assertTrue(self.vt.vote)
+        self.assertIsNotNone(self.comment)
+        self.assertIsNotNone(self.editor)
+        self.assertIsNotNone(self.date)
+
+
 class ArticleTests(TestCase):
     '''Articles that are already published
     '''
