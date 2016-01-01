@@ -1,4 +1,5 @@
 from django.auth.models import User
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
@@ -7,6 +8,9 @@ from .models import Article, Invitation, Author, Reviewer, Editor, SciField, Iss
 
 #Create your tests here.
 class AuthorTest(TestCase):
+    '''Basic author behaviour and properties
+    '''
+
     def setUp(self):
         auth1 = Author.objects.create(firstname='John', # required
                                       secondname='Doe',
@@ -18,7 +22,8 @@ class AuthorTest(TestCase):
                                       organization='',
                                       zipcode='',
                                       address='',
-                                      city=''
+                                      city='',
+                                      role='AU'
                                       )
 
         auth2 = Author.objects.create(firstname='John',
@@ -32,6 +37,7 @@ class AuthorTest(TestCase):
                                       zipcode='', # use validator
                                       address='',
                                       city=''
+                                      role='AU'
                                       )
 
     def test_author_valid(self):
@@ -47,6 +53,18 @@ class AuthorTest(TestCase):
 
     def test_author_notstaff(self):
         self.assertFalse(self.auth1.user.is_staff)
+
+    def test_is_author(self):
+        self.assertTrue(self.auth1.is_author)
+
+    def test_is_editor(self):
+        self.assertFalse(self.auth1.is_editor)
+
+
+
+
+
+class ReviewerTest(TestCase):
 
 
 class ArticleTests(TestCase):
