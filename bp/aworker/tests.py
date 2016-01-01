@@ -3,9 +3,10 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.utils import timezone
 
+
 from .models import (Article, Invitation, Author,
                      Reviewer, Editor, SciField, Issue,
-                     ArtExtra,
+                     ArtExtra, Review, PaperSource
                      Votes)
 
 
@@ -134,6 +135,40 @@ class VotesTest(TestCase):
         self.assertIsNotNone(self.editor)
         self.assertIsNotNone(self.date)
 
+
+
+        
+
+class IssueTest(TestCase):
+    '''Initially issue is created by the author
+    '''
+
+    def setUp(self):
+        author = Author.objects.create(firstname='Mike', email='author@mail.com')
+        reviwer = Reviewer.objects.create(firstname='John', email='sample@mail.com')
+        editor = Editor.objects.create(firstname='John', email='editor@mail.com')
+        self.issue = Issue.objects.create()
+        rev1 = Review.objects.create(author=reviwer, issue=self.issue)
+        rev2 = Review.objects.create(author=reviwer, issue=self.issue)
+        rev3 = Review.objects.create(author=reviwer, issue=self.issue)
+        self.issue.authors.add(author)
+        self.issue.save()
+        vote1 = Vote.objects.create(editor=editor, vote=True, issue=self.issue)
+        vote2 = Vote.objects.create(editor=editor, vote=False, issue=self.issue)
+        vote1.save()
+        vote2.save()
+        answer1 = Answer.objects.create(reviewer=reviwer, review=rev1)
+        answer2 = Answer.objects.create(reviewer=reviwer, review=rev3)
+
+    def test_issue_completeness(self):
+        self.assertIsNotNone(self.issue.created)
+        self.assertIsNotNone(self.issue.authors)
+        self.assertIsNotNone(self.issue.reviews)
+        self.assertIsNotNone(self.issue.answers)
+        self.assertIsNotNone(self.issue.created)
+        self.assertIsNotNone(self.issue.updated)
+        self.assertIsNone(self.issue.pbready) # output paper file
+        
 
 class ArticleTests(TestCase):
     '''Articles that are already published
