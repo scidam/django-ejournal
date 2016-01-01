@@ -86,7 +86,27 @@ class EditorTest(TestCase):
 
 
 class ReviewerTest(TestCase):
+    def setUp(self):
+        rev = Reviewer.objects.create(firstname='John', # required
+                                      secondname='Doe',
+                                      thirdname='',
+                                      country_code='US',
+                                      email='some@example.com', # required
+                                      phone='',
+                                      position='',
+                                      organization='',
+                                      zipcode='',
+                                      address='',
+                                      city='',
+                                      role='RE'
+                                      )
 
+    def test_is_author(self):
+        pass
+
+    def test_is_editor(self):
+        self.assertFalse(self.rev.is_editor)
+        
 
 class ArticleTests(TestCase):
     '''Articles that are already published
