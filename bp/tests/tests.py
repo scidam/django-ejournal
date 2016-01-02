@@ -168,9 +168,9 @@ class IssueTest(TestCase):
         reviwer = Reviewer.objects.create(firstname='John', email='sample@mail.com')
         editor = Editor.objects.create(firstname='John', email='editor@mail.com')
         self.issue = Issue.objects.create()
-        rev1 = Review.objects.create(author=reviwer, issue=self.issue)
-        rev2 = Review.objects.create(author=reviwer, issue=self.issue)
-        rev3 = Review.objects.create(author=reviwer, issue=self.issue)
+        rev1 = Review.objects.create(reviewer=reviwer, issue=self.issue)
+        rev2 = Review.objects.create(reviewer=reviwer, issue=self.issue)
+        rev3 = Review.objects.create(reviewer=reviwer, issue=self.issue)
         self.issue.authors.add(author)
         self.issue.save()
         vote1 = Vote.objects.create(editor=editor, vote=True, issue=self.issue)
@@ -230,17 +230,22 @@ class ArtExtraTests(TestCase):
 class ReviewTests(TestCase):
     def setUp(self):
         self.issue = Issue.objects.create()
-        self.reviewer = Reviewer.objects.create(firstname='John', email='sample@mail.com')
-        self.review = Review.objects.create(reviewer=self.reviewer, issue=self.issue)
+        self.reviewer = Reviewer.objects.create(firstname='John', email='sample@mail.com',
+                                                secondname='Doe')
+        self.review = Review.objects.create(reviewer=self.reviewer, issue=self.issue,
+                                            description='nothing')
+
+    def test_str_method(self):
+        self.assertEqual(str(self.review), 'John D.: %s'%self.review.updated)
 
     def test_review_completeness(self):
         self.assertIsNotNone(self.review.file)
-        self.assertEqual(self.review.description)
+        self.assertEqual(self.review.description, 'nothing')
         self.assertIsNotNone(self.review.reviewer)
         self.assertIsNotNone(self.review.created)
         self.assertIsNotNone(self.review.updated)
         self.assertIsNotNone(self.review.issue)
-
+    
 
 class InvitationTests(TestCase):
 

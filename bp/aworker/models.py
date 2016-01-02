@@ -76,7 +76,7 @@ class Reviewer(AbstractUserMixin):
 
 class Editor(AbstractUserMixin):
     pass
- 
+
 class Article(models.Model):
     pass
 
@@ -101,8 +101,23 @@ class ArtExtra(models.Model):
 class Issue(models.Model):
     pass
 
+@python_2_unicode_compatible
 class Review(models.Model):
-    pass
+    file = models.FileField(upload_to='reviews/%Y/%m/%d/', null=True, blank=True)
+    description = models.TextField(default='', blank=True, verbose_name=_('Description'))
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
+    updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated'), blank=True, default=timezone.now())
+    issue = models.ForeignKey(Issue, null=True, blank=True, verbose_name=_('Issue'), related_name='reviews')
+    reviewer = models.ForeignKey(Reviewer, null=True, blank=True, verbose_name=_('Reviewer'), related_name='reviews')
+
+    def __str__(self):
+        res = ''
+        if self.reviewer:
+            res += self.reviewer.firstname.title()
+            if self.reviewer.secondname:
+                res += ' ' + self.reviewer.secondname.strip()[0].capitalize()+'.: '
+        res += str(self.updated)
+        return res
 
 
 @python_2_unicode_compatible
