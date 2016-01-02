@@ -10,6 +10,8 @@ from django.test.utils import get_runner
 if __name__ == "__main__":
     os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.test_settings'
     django.setup()
+    call_command("makemigrations")
+#     call_command('migrate')
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
     failures = test_runner.run_tests(["tests"])

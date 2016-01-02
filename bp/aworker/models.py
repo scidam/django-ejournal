@@ -1,13 +1,18 @@
 from __future__ import unicode_literals
 
 import datetime
+import hashlib
+import os
 from uuid import uuid4
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import pre_save, post_delete
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext as _
+
 
 @python_2_unicode_compatible
 class AbstractUserMixin(models.Model):
@@ -15,7 +20,7 @@ class AbstractUserMixin(models.Model):
                     ('ED', _('Editor')),
                     ('RE', _('Reviewer'))
                     )
-    firstname = models.CharField(max_length=100)
+    firstname = models.CharField(max_length=100, verbose_name=_('First name'))
     email = models.EmailField(blank=False, unique=True, verbose_name=_('Email'))
     secondname = models.CharField(max_length=100, blank=True, default='',
                                   verbose_name=_('Family name'))
@@ -48,6 +53,11 @@ class AbstractUserMixin(models.Model):
         user = User.objects.create(email=self.email, username=uuid4().hex[:12])
         self.user = user
         super(AbstractUserMixin, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        if self.user:
+            self.user.delete()
+        super(AbstractUserMixin, self).delete(*args, **kwargs)
 
     @property
     def is_editor(self):
@@ -84,22 +94,90 @@ class Invitation(models.Model):
     @property
     def is_expired(self):
         return False if (self.created <= timezone.now()) and (timezone.now() <= self.created + datetime.timedelta(seconds=self.duration)) else True
- 
+
 class ArtExtra(models.Model):
     pass
- 
+
 class Issue(models.Model):
     pass
- 
+
 class Review(models.Model):
     pass
- 
+
+
+@python_2_unicode_compatible
 class PaperSource(models.Model):
-    pass
- 
+    file = models.FileField(upload_to='sources/%Y/%m/%d/', null=True, blank=True)
+    description = models.TextField(default='', blank=True, verbose_name=_('Description'))
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
+    issue = models.ForeignKey(Issue, related_name='sources', null=True, blank=True, verbose_name=('Issue'))
+    hashcode = models.CharField(default='', blank=True, verbose_name=_('Hash'), max_length=40)
+    removed = models.BooleanField(default=False, blank=True, verbose_name=_('Remove'))
+    owner = models.ForeignKey(AbstractUserMixin, null=True, blank=True, verbose_name=_('Owner'), related_name='sources')
+
+    def __str__(self):
+        res = ''
+        if self.description:
+            res += self.description[:30]
+        if self.file:
+            res += ' (file: %s)'%self.file.filename
+        return res
+
+    @property
+    def filename(self):
+        if self.file:
+            return os.path.basename(self.file.name)
+        else:
+            return ''
+
+    @property
+    def modified(self):
+        if not self.hashcode:
+            return False
+        if self.hashcode != self.current_hash:
+            return True
+
+    @property
+    def current_hash(self):
+        m = hashlib.sha1()
+        if self.description:
+            m.update(self.description)
+        if self.file.name:
+            self.file.seek(0)
+            m.update(self.file.read())
+        return m.hexdigest()
+
+
+@python_2_unicode_compatible
 class Vote(models.Model):
-    pass
- 
+    issue = models.ForeignKey(Issue, related_name='votes', default=None, null=True, verbose_name=_('Issue'))
+    vote = models.BooleanField(default=False, blank=False, verbose_name=_('Vote'))
+    comment = models.TextField(default='', blank=True, verbose_name=_('Comment'))
+    editor = models.ForeignKey(Editor, null=True, verbose_name=_('Editor'))
+    date = models.DateTimeField(auto_now=True, default=timezone.now())
+
+    def __str__(self):
+        if self.vote:
+            res = _('Accepted')
+        else:
+            res = _('Discarded')
+        res += ': %s'%self.date
+        return res
+
 class Answer(models.Model):
     pass
 
+
+def compute_hash_on_paperissue(sender, instance, *args, **kwargs):
+    if not instance.hashcode:
+        instance.hashcode = instance.current_hash
+
+
+def clean_files_paperissue(sender, instance, *args, **kwargs):
+    try:
+        os.remove(os.path.join(settings.MEDIA_ROOT, instance.file.path))
+    except:
+        pass
+
+pre_save.connect(compute_hash_on_paperissue, sender=PaperSource)
+post_delete.connect(clean_files_paperissue, sender=PaperSource)

@@ -5,6 +5,7 @@ from aworker.models import (Article, Invitation, Author,
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.utils import timezone
 
@@ -121,27 +122,29 @@ class VotesTest(TestCase):
         '''
         self.assertIsNotNone(self.vt.editor)
         self.assertTrue(self.vt.vote)
-        self.assertIsNotNone(self.comment)
-        self.assertIsNotNone(self.editor)
-        self.assertIsNotNone(self.date)
+        self.assertIsNotNone(self.vt.comment)
+        self.assertIsNotNone(self.vt.editor)
+        self.assertIsNotNone(self.vt.date)
 
 
-class PaperSource(TestCase):
+class PaperSourceTests(TestCase):
     '''Source of each paper. It is used by the Issue instance.
     '''
     def setUp(self):
         self.papersource = PaperSource.objects.create()
-        self.papersource1 = PaperSource.objects.create(description='new')
+        self.papersource1 = PaperSource.objects.create(description='new1')
         self.papersource2 = PaperSource.objects.create(description='new')
-        self.papersource3 = PaperSource.objects.create(file=ContentFile('new'))
+        self.papersource3 = PaperSource.objects.create(file=SimpleUploadedFile('new.txt','new'))
 
     def test_paper_source_completeness(self):
-        self.assertIsNone(self.papersource.file)
-        self.assertIsEqual(self.papersource.description, '')
+        self.assertIsNotNone(self.papersource.file)
+        self.assertIsNone(self.papersource.file.name)
+        self.assertEqual(self.papersource.description, '')
         self.assertIsNotNone(self.papersource.created)
         self.assertIsNone(self.papersource.issue)
         self.assertIsNotNone(self.papersource.hashcode)
         self.assertFalse(self.papersource.removed)
+        self.assertIsNone(self.papersource.owner)
 
     def test_paper_source_hash_changed(self):
         self.assertNotEqual(self.papersource.hashcode, self.papersource1.hashcode)
@@ -151,7 +154,9 @@ class PaperSource(TestCase):
 
     def test_paper_with_file(self):
         self.assertEqual(self.papersource3.hashcode, self.papersource2.hashcode)
-    
+
+    def test_length_hashcode(self):
+        self.assertEqual(len(self.papersource1.hashcode), 40)
 
 class IssueTest(TestCase):
     '''Initially issue is created by the author
