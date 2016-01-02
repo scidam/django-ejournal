@@ -158,6 +158,7 @@ class PaperSourceTests(TestCase):
     def test_length_hashcode(self):
         self.assertEqual(len(self.papersource1.hashcode), 40)
 
+
 class IssueTest(TestCase):
     '''Initially issue is created by the author
     '''
@@ -204,6 +205,7 @@ class ArticleTests(TestCase):
                                      extrainfo=ArtExtra.objects.create()
                                      )
 
+
 class ReviewTests(TestCase):
     def setUp(self):
         self.issue = Issue.objects.create()
@@ -217,7 +219,6 @@ class ReviewTests(TestCase):
         self.assertIsNotNone(self.review.created)
         self.assertIsNotNone(self.review.updated)
         self.assertIsNotNone(self.review.issue)
-        
 
 
 class InvitationTests(TestCase):
