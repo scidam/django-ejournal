@@ -246,6 +246,38 @@ class ReviewTests(TestCase):
         self.assertIsNotNone(self.review.issue)
 
 
+class AnswerTests(TestCase):
+
+    def setUp(self):
+        self.author = Author.objects.create(firstname='Mike', email='iamauthor@mail.com', secondname='Form')
+        self.issue = Issue.objects.create()
+        self.reviewer = Reviewer.objects.create(firstname='John', email='sample@mail.com',
+                                                secondname='Doe')
+        self.review = Review.objects.create(reviewer=self.reviewer, issue=self.issue,
+                                            description='nothing')
+        self.attach1 = PaperSource.objects.create(owner=self.author, description='First mentioned')
+        self.attach2 = PaperSource.objects.create(owner=self.author, description='Another note')
+        self.answer = Answer.objects.create(review=self.review, description='I am right!')
+
+    def test_m2m_add_on_attachment(self):
+        self.answer.attachments.add(self.attach1)
+        self.answer.attachments.add(self.attach2)
+        self.answer.save()
+        # testing for listing all attachments
+        self.assertIn(self.attach1, self.answer.attachments.all())
+        self.assertIn(self.attach2, self.answer.attachemnts.all())
+
+    def test_str_method_on_answer(self):
+        self.assertEqual(str(self.answer), 'By Mike F.: %s'%self.created)
+
+    def test_answer_completeness(self):
+        #Just to test existing fields
+        self.assertIsNotNone(self.answer.created)
+        self.assertIsNotNone(self.answer.attachments)
+        self.assertIsNotNone(self.answer.review)
+        self.assertEqual(self.answer.description, 'I am right!')
+        self.assertIsNotNone(self.answer.file.name)
+
 
 class InvitationTests(TestCase):
 
