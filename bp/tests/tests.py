@@ -204,6 +204,21 @@ class ArticleTests(TestCase):
                                      extrainfo=ArtExtra.objects.create()
                                      )
 
+class ReviewTests(TestCase):
+    def setUp(self):
+        self.issue = Issue.objects.create()
+        self.reviewer = Reviewer.objects.create(firstname='John', email='sample@mail.com')
+        self.review = Review.objects.create(reviewer=self.reviewer, issue=self.issue)
+
+    def test_review_completeness(self):
+        self.assertIsNotNone(self.review.file)
+        self.assertEqual(self.review.description)
+        self.assertIsNotNone(self.review.reviewer)
+        self.assertIsNotNone(self.review.created)
+        self.assertIsNotNone(self.review.updated)
+        self.assertIsNotNone(self.review.issue)
+        
+
 
 class InvitationTests(TestCase):
 
