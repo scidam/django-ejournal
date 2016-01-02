@@ -205,6 +205,7 @@ class ArticleTests(TestCase):
                                      extrainfo=ArtExtra.objects.create()
                                      )
 
+
 class ArtExtraTests(TestCase):
 
     def setUp(self):
@@ -224,7 +225,8 @@ class ArtExtraTests(TestCase):
     def test_udk_is_valid(self):
         self.assertFalse(self.artextra.udk)
         self.assertTrue(self.validdoi.udk)
-        
+
+
 class ReviewTests(TestCase):
     def setUp(self):
         self.issue = Issue.objects.create()

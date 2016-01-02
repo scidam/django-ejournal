@@ -70,10 +70,10 @@ class AbstractUserMixin(models.Model):
 
 class Author(AbstractUserMixin):
     pass
- 
+
 class Reviewer(AbstractUserMixin):
     pass
- 
+
 class Editor(AbstractUserMixin):
     pass
  
