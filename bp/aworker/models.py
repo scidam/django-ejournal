@@ -99,7 +99,11 @@ class ArtExtra(models.Model):
     pass
 
 class Issue(models.Model):
-    pass
+    authors = models.ManyToManyField(AbstractUserMixin, null=True, blank=True, verbose_name=_('Authors'))
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
+    updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated'), blank=True, default=timezone.now())
+    paper = models.ForeignKey(Article, null=True, blank=True, verbose_name=_('Paper'))
+    
 
 @python_2_unicode_compatible
 class Review(models.Model):

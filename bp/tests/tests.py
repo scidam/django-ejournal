@@ -187,7 +187,6 @@ class IssueTest(TestCase):
         self.assertIsNotNone(self.issue.authors)
         self.assertIsNotNone(self.issue.reviews)
         self.assertIsNotNone(self.issue.answers)
-        self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.updated)
         self.assertIsNone(self.issue.paper) # Link to the article instance! output paper
         self.assertIsNotNone(self.issue.sources)
@@ -245,7 +244,8 @@ class ReviewTests(TestCase):
         self.assertIsNotNone(self.review.created)
         self.assertIsNotNone(self.review.updated)
         self.assertIsNotNone(self.review.issue)
-    
+
+
 
 class InvitationTests(TestCase):
 
