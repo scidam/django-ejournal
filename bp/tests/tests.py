@@ -205,7 +205,26 @@ class ArticleTests(TestCase):
                                      extrainfo=ArtExtra.objects.create()
                                      )
 
+class ArtExtraTests(TestCase):
 
+    def setUp(self):
+        self.artextra = ArtExtra.objects.create(doi='', udk='', pages='', permalink='')
+        self.validdoi = ArtExtra.objects.create(doi='10.2344/254', udk='527.03', pages='', permalink='')
+
+    def test_artextra_completeness(self):
+        self.assertEqual(self.artextra.doi, '')
+        self.assertEqual(self.artextra.udk, '')
+        self.assertEqual(self.artextra.pages, '')
+        self.assertEqual(self.artextra.permalink, '')
+
+    def test_doi_is_valid(self):
+        self.assertFalse(self.artextra.doi)
+        self.assertTrue(self.validdoi.doi)
+
+    def test_udk_is_valid(self):
+        self.assertFalse(self.artextra.udk)
+        self.assertTrue(self.validdoi.udk)
+        
 class ReviewTests(TestCase):
     def setUp(self):
         self.issue = Issue.objects.create()
