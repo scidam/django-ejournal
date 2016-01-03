@@ -174,7 +174,10 @@ class Vote(models.Model):
     comment = models.TextField(default='', blank=True, verbose_name=_('Comment'))
     editor = models.ForeignKey(Editor, null=True, verbose_name=_('Editor'))
     date = models.DateTimeField(auto_now=True, default=timezone.now())
-
+    role = models.CharField(max_length=2, choices=AbstractUserMixin.ROLE_CHOICES,
+                            default=AbstractUserMixin.ROLE_CHOICES[0][0]
+                            )
+    
     def __str__(self):
         if self.vote:
             res = _('Accepted')
