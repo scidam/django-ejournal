@@ -134,13 +134,13 @@ class Review(models.Model):
 
 @python_2_unicode_compatible
 class PaperSource(models.Model):
-    file = models.FileField(upload_to='sources/%Y/%m/%d/', null=True, blank=True)
+    file = models.FileField(upload_to='sources/%Y/%m/%d/', null=True, blank=False)
     description = models.TextField(default='', blank=True, verbose_name=_('Description'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
     issue = models.ForeignKey(Issue, related_name='sources', null=True, blank=True, verbose_name=('Issue'))
     hashcode = models.CharField(default='', blank=True, verbose_name=_('Hash'), max_length=40)
     removed = models.BooleanField(default=False, blank=True, verbose_name=_('Remove'))
-    owner = models.ForeignKey(AbstractUserMixin, null=True, blank=True, verbose_name=_('Owner'), related_name='sources')
+    owner = models.OneToOneField(AbstractUserMixin, null=True, blank=False, verbose_name=_('Owner'), related_name='sources')
 
     def __str__(self):
         res = ''

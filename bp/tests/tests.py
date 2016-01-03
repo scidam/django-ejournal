@@ -148,8 +148,8 @@ class VotesTest(TestCase):
         self.assertTrue(Vote._meta.get_field('vote').blank)
 
     def test_vote_date_update(self):
-        self.assertTrue(Vote._meta.get_field('vote').auto_now)
-        self.assertFalse(Vote._meta.get_field('vote').auto_now_add)
+        self.assertTrue(Vote._meta.get_field('date').auto_now)
+        self.assertFalse(Vote._meta.get_field('date').auto_now_add)
 
     def test_editor_type(self):
         self.assertIsInstance(Vote._meta.get_field('editor'), models.OneToOneField)
@@ -159,7 +159,7 @@ class VotesTest(TestCase):
         self.assertTrue(Vote._meta.get_field('editor').null)
 
     def test_issue_type(self):
-        self.assertIsInstance(Vote._meta.fields.get_field('issue'), models.OneToOneField)
+        self.assertIsInstance(Vote._meta.get_field('issue'), models.OneToOneField)
         self.assertTrue(Vote._meta.get_field('issue').null)
         self.assertTrue(Vote._meta.get_field('issue').blank)
 
