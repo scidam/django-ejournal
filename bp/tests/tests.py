@@ -188,8 +188,12 @@ class IssueTest(TestCase):
         self.assertIsNotNone(self.issue.reviews)
         self.assertIsNotNone(self.issue.answers)
         self.assertIsNotNone(self.issue.updated)
-        self.assertIsNone(self.issue.paper) # Link to the article instance! output paper
+        self.assertIsInstance(self.issue.paper, Article) # Link to the article instance! output paper
         self.assertIsNotNone(self.issue.sources)
+
+
+    def test_issue_create_article(self):
+        pass
 
 
 class ArticleTests(TestCase):
@@ -197,12 +201,30 @@ class ArticleTests(TestCase):
     '''
 
     def setUp(self):
-        art = Article.objects.create(name='About winds influences on the spiritual life of the clergy?',
+        self.art = Article.objects.create(name='About winds influences on the spiritual life of the clergy?',
                                      published=True,
                                      pub_date=timezone.now(),
                                      authors=Author.objects.create(name='John Doe'),
                                      extrainfo=ArtExtra.objects.create()
                                      )
+
+    def test_article_is_extrainfor_null_true(self):
+        self.assertTrue(Article._meta.get_field('extrainfo').null)
+        self.assertTrue(Article._meta.get_field('extrainfo').blank)
+
+    def test_article_default_published_false(self):
+        self.assertFalse(Article._meta.get_field('published').null)
+
+    def test_article_authors_null_true(self):
+        self.assertTrue(Article._meta.get_field('authors').null)
+        self.assertTrue(Article._meta.get_field('authors').blank)
+
+    def test_article_name_required(self):
+        self.assertFalse(Article._meta.get_field('name').blank)
+
+    def test_article_str_method(self):
+        res = self.art.name[:30]+' ...:'+ 'Published: %s'%(self.art.pub_date if self.art.pub_date else False,)
+        self.assertEqual(str(self.art), res)
 
 
 class ArtExtraTests(TestCase):
