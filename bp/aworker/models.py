@@ -192,7 +192,7 @@ class Vote(models.Model):
         return res
 
 class Answer(models.Model):
-    pass
+    attachments = models.ManyToManyField(PaperSource, related_name='answers', blank=True, null=True, verbose_name=_('Attachments'))
 
 
 def compute_hash_on_paperissue(sender, instance, *args, **kwargs):
