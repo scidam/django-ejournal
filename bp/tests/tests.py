@@ -242,12 +242,20 @@ class ArtExtraTests(TestCase):
         self.assertEqual(self.artextra.permalink, '')
 
     def test_doi_is_valid(self):
-        self.assertFalse(self.artextra.doi)
-        self.assertTrue(self.validdoi.doi)
+        artextra_form = ArtExtraForm(instance=self.artextra)
+        self.assertFalse(artextra_form.is_valid()) # pages assumed to be mandatory
+        bound_artextra_form = ArtExtraForm({'doi':'10.123/856', 'udk':'', 'pages':'1-2'}, instance=self.artextra)
+        self.assertTrue(bound_artextra_form.is_valid())
+        bound_artextra_form = ArtExtraForm({'doi':'//df//sdf', 'udk':'', 'pages':'1-2'}, instance=self.artextra)
+        self.assertFalse(bound_artextra_form.is_valid())
 
     def test_udk_is_valid(self):
-        self.assertFalse(self.artextra.udk)
-        self.assertTrue(self.validdoi.udk)
+        artextra_form = ArtExtraForm(instance=self.artextra)
+        self.assertFalse(artextra_form.is_valid()) # pages assumed to be mandatory
+        bound_artextra_form = ArtExtraForm({'doi':'10.123/856', 'udk':'518', 'pages':'1-2'}, instance=self.artextra)
+        self.assertTrue(bound_artextra_form.is_valid())
+        bound_artextra_form = ArtExtraForm({'doi':'10.123/856', 'udk':'buba', 'pages':'1-2'}, instance=self.artextra)
+        self.assertFalse(bound_artextra_form.is_valid())
 
     def test_doi_max_length(self):
         self.assertGreater(ArtExtra._meta.get_field('doi').max_length, 30)
