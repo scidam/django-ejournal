@@ -173,7 +173,52 @@ class PaperSourceTests(TestCase):
         self.papersource3 = PaperSource.objects.create(file=SimpleUploadedFile('new.txt','new'))
 
     def test_paper_file_mandatory(self):
-        PaperSource._meta.fields.get_field()
+        self.assertTrue(PaperSource._meta.get_field('file').null)
+        self.assertFalse(PaperSource._meta.get_field('file').blank)
+
+    def test_paper_description_type(self):
+        self.assertIsInstance(PaperSource._meta.get_field('description'), models.TextField)
+
+    def test_paper_description_default(self):
+        self.assertEqual(PaperSource._meta.get_field('description').default, '')
+
+    def test_paper_description_non_mandatory(self):
+        self.assertTrue(PaperSource._meta.get_field('description').blank)
+
+    def test_paper_created_type(self):
+        self.assertIsInstance(PaperSource._meta.get_field('created'), models.DateTimeField)
+
+    def test_paper_created_attribute(self):
+        self.assertTrue(PaperSource._meta.get_field('created').auto_now_add)
+
+    def test_paper_removed_default(self):
+        self.assertFalse(PaperSource._meta.get_field('removed').default)
+
+    def test_paper_removed_nonmandatory(self):
+        self.assertTrue(PaperSource._meta.get_field('removed').blank)
+
+    def test_paper_removed_type(self):
+        self.assertIsInstance(PaperSource._meta.get_field('removed'), models.BooleanField)
+
+    def test_paper_issue_mandatory(self):
+        self.assertFalse(PaperSource._meta.get_field('issue').blank)
+        self.assertTrue(PaperSource._meta.get_field('issue').null)
+
+    def test_paper_issue_type(self):
+        self.assertIsInstance(PaperSource._meta.get_field('issue'), models.ForeignKey)
+
+    def test_paper_issue_related_name(self):
+        self.assertEqual(PaperSource._meta.get_field('issue').related_name, 'sources')
+
+    def test_paper_owner_type(self):
+        self.assertIsInstance(PaperSource._meta.get_field('owner'), models.OneToOneField)
+
+    def test_paper_owner_mandatory(self):
+        self.assertFalse(PaperSource._meta.get_field('owner').blank)
+        self.assertTrue(PaperSource._meta.get_field('owner').null)
+
+    def test_paper_owner_instance_type(self):
+        self.assertIsInstance(PaperSource._meta.get_field('owner').related_model, AbstractUserMixin)
 
     def test_paper_source_completeness(self):
         self.assertIsNotNone(self.papersource.file)
