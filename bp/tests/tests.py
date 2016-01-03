@@ -207,7 +207,7 @@ class ArticleTests(TestCase):
         self.art = Article.objects.create(name='About winds influences on the spiritual life of the clergy?',
                                      published=True,
                                      pub_date=timezone.now(),
-                                     authors=Author.objects.create(name='John Doe'),
+                                     authors=Author.objects.create(name='John Doe', email='me@mail.com'),
                                      extrainfo=ArtExtra.objects.create()
                                      )
 
@@ -224,11 +224,39 @@ class ArticleTests(TestCase):
 
     def test_article_name_required(self):
         self.assertFalse(Article._meta.get_field('name').blank)
+        self.assertGreater(len(self.art.name)>10)
 
     def test_article_str_method(self):
         res = self.art.name[:30]+' ...:'+ 'Published: %s'%(self.art.pub_date if self.art.pub_date else False,)
         self.assertEqual(str(self.art), res)
 
+    def test_article_keywords(self):
+        self.assertFalse(Article._meta.get_field('keywords').blank)
+
+    def test_article_keywords_validation(self):
+        art_form = ArticleForm(instance=self.art)
+        self.assertFalse(art_form.is_valid())
+        bound_art_form = ArticleForm({'name': 'test', 'abstract':'Test', 'keywords':'one,two,three'}, instance=self.art)
+        self.assertTrue(bound_art_form.is_valid())
+        bound_art_form = ArticleForm({'name': 'test', 'abstract':'Test', 'keywords':''}, instance=self.art)
+        self.assertFalse(bound_art_form.is_valid())
+
+    def test_article_keywords_length(self):
+        self.assertEqual(Article._meta.get_field('keywords').max_length, settings.EJOURNAL_MAX_KEYWORDS_LENGTH)
+
+    def test_article_description_length(self):
+        self.assertEqual(Article._meta.get_field('description').max_length, settings.EJOURNAL_MAX_DESCRIPTION_LENGTH)
+
+    def test_article_description_non_mandatory(self):
+        self.assertTrue(Article._meta.get_field('description').blank)
+        self.assertEqual(Article._meta.get_field('description').default, '')
+
+    def test_article_pub_date_field_type(self):
+        self.assertIsInstance(Article._meta.get_field('pub_date'), models.DateField)
+
+    def test_article_pub_date_non_mandatory(self):
+        self.assertTrue(Article._meta.get_field('pub_date').blank)
+        
 
 class ArtExtraTests(TestCase):
 
