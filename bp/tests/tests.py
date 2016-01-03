@@ -8,6 +8,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import models
 from django.test import TestCase
 from django.utils import timezone
 
@@ -290,6 +291,22 @@ class ReviewTests(TestCase):
         self.assertIsNotNone(self.review.created)
         self.assertIsNotNone(self.review.updated)
         self.assertIsNotNone(self.review.issue)
+
+    def test_review_issue_attributes(self):
+        self.assertTrue(Review._meta.get_field('file').null)
+        self.assertTrue(Review._meta.get_field('file').blank)
+
+    def test_review_issue_attributes(self):
+        self.assertTrue(Review._meta.get_field('issue').null)
+        self.assertTrue(Review._meta.get_field('issue').blank)
+
+    def test_review_description_attributes(self):
+         self.assertTrue(Review._meta.get_field('description').blank)
+         self.assertIsInstance(Review._meta.get_field('description'), models.TextField)
+
+    def test_review_reviewer_attributes(self):
+        self.assertTrue(Review._meta.get_field('reviewer').null)
+        self.assertTrue(Review._meta.get_field('reviewer').blank)
 
 
 class AnswerTests(TestCase):
