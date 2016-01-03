@@ -62,3 +62,5 @@ project.db
 .project
 .pydevproject
 *.*~
+bp/media
+bp/static
