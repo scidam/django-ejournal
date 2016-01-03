@@ -1,9 +1,11 @@
 from Crypto import SelfTest
 
+from aworker.forms import ArtExtraForm, ArticleForm
 from aworker.models import (Article, Invitation, Author,
                      Reviewer, Editor, Issue,
                      ArtExtra, Review, PaperSource,
-                     Vote, Answer)
+                     Vote, Answer, AbstractUserMixin)
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
@@ -174,7 +176,7 @@ class IssueTest(TestCase):
         rev1 = Review.objects.create(reviewer=reviwer, issue=self.issue)
         rev2 = Review.objects.create(reviewer=reviwer, issue=self.issue)
         rev3 = Review.objects.create(reviewer=reviwer, issue=self.issue)
-        self.issue.authors.add(author)
+        self.issue.author.add(author)
         self.issue.save()
         vote1 = Vote.objects.create(editor=editor, vote=True, issue=self.issue)
         vote2 = Vote.objects.create(editor=editor, vote=False, issue=self.issue)
@@ -194,9 +196,51 @@ class IssueTest(TestCase):
         self.assertIsInstance(self.issue.paper, Article) # Link to the article instance! output paper
         self.assertIsNotNone(self.issue.sources)
 
+    def test_issue_created_type(self):
+        self.assertIsInstance(Issue._meta.get_field('created'), models.DateTimeField)
 
-    def test_issue_create_article(self):
-        pass
+    def test_issue_created_autofield(self):
+        self.assertTrue(Issue._meta.get_field('created').auto_now)
+
+    def test_issue_coauthors_attributes(self):
+        self.assertTrue(Issue._meta.get_field('coauthors').blank)
+        self.assertTrue(Issue._meta.get_field('coauthors').null)
+
+    def test_issue_main_author_type(self):
+        self.assertIsInstance(Issue._meta.get_field('author'), models.OneToOneField)
+        self.assertIsInstance(self.issue.author, AbstractUserMixin)
+
+    def test_issue_main_author_attributes(self):
+        self.assertFalse(Issue._meta.get_field('author').blank)
+        self.assertTrue(Issue._meta.get_field('author').null)
+
+    def test_issue_reviewers_type(self):
+        self.assertIsInstance(Issue._meta.get_field('reviewers'), models.ManyToManyField)
+
+    def test_issue_reviewers_attributes(self):
+        self.assertTrue(Issue._meta.get_field('reviewers').blank)
+        self.assertTrue(Issue._meta.get_field('reviewers').null)
+
+    def test_issue_reviewers_add_reviewer(self):
+        self.assertFalse(self.issue.reviewers.exists())
+        self.issue.reviewers.add(self.reviewer)
+        self.issue.save()
+        self.assertTrue(self.issue.reviewers.exists())
+        self.assertIn(self.reviewer, self.issue.reviewers.all())
+        self.assertEqual(self.issue.reviewers.count(), 1)
+
+    def test_issue_deletion(self):
+        if not self.issue.reviewers.exists():
+            pk = self.issue.pk
+            self.issue.delete()
+            with self.assertRaises(Issue.DoesNotExist):
+                Issue.objects.get(id=pk)
+        self.issue.reviewers.add(self.reviwer)
+        self.issue.save()
+        pk = self.issue.pk
+        self.issue.delete()  # Pass quiet by default
+        self.assertTrue(Issue.objects.exists())
+        self.assertEqual(self.issue, Issue.objects.get(id=pk))
 
 
 class ArticleTests(TestCase):
@@ -256,7 +300,7 @@ class ArticleTests(TestCase):
 
     def test_article_pub_date_non_mandatory(self):
         self.assertTrue(Article._meta.get_field('pub_date').blank)
-        
+
 
 class ArtExtraTests(TestCase):
 
