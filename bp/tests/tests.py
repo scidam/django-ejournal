@@ -1,5 +1,3 @@
-from Crypto import SelfTest
-
 from aworker.forms import ArtExtraForm, ArticleForm
 from aworker.models import (Article, Invitation, Author,
                      Reviewer, Editor, Issue,
