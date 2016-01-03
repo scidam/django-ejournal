@@ -1,3 +1,5 @@
+from Crypto import SelfTest
+
 from aworker.models import (Article, Invitation, Author,
                      Reviewer, Editor, Issue,
                      ArtExtra, Review, PaperSource,
@@ -246,6 +248,20 @@ class ArtExtraTests(TestCase):
     def test_udk_is_valid(self):
         self.assertFalse(self.artextra.udk)
         self.assertTrue(self.validdoi.udk)
+
+    def test_doi_max_length(self):
+        self.assertGreater(ArtExtra._meta.get_field('doi').max_length, 30)
+
+    def test_udk_max_length(self):
+        self.assertGreater(ArtExtra._meta.get_field('udk').max_length, 30)
+
+    def test_pages_mandatory(self):
+        self.assertGreater(ArtExtra._meta.get_field('pages').max_length, 9)
+        self.assertFalse(ArtExtra._meta.get_field('pages').blank)
+
+    def test_permalink_optional(self):
+        self.assertTrue(ArtExtra._meta.get_field('permalink').blank)
+        self.assertGreater(ArtExtra._meta.get_field('permalink').max_length, 200)
 
 
 class ReviewTests(TestCase):
