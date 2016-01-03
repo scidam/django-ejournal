@@ -292,7 +292,7 @@ class ReviewTests(TestCase):
         self.assertIsNotNone(self.review.updated)
         self.assertIsNotNone(self.review.issue)
 
-    def test_review_issue_attributes(self):
+    def test_review_file_attributes(self):
         self.assertTrue(Review._meta.get_field('file').null)
         self.assertTrue(Review._meta.get_field('file').blank)
 
@@ -301,8 +301,8 @@ class ReviewTests(TestCase):
         self.assertTrue(Review._meta.get_field('issue').blank)
 
     def test_review_description_attributes(self):
-         self.assertTrue(Review._meta.get_field('description').blank)
-         self.assertIsInstance(Review._meta.get_field('description'), models.TextField)
+        self.assertTrue(Review._meta.get_field('description').blank)
+        self.assertIsInstance(Review._meta.get_field('description'), models.TextField)
 
     def test_review_reviewer_attributes(self):
         self.assertTrue(Review._meta.get_field('reviewer').null)
