@@ -174,7 +174,7 @@ class IssueTest(TestCase):
         rev1 = Review.objects.create(reviewer=reviwer, issue=self.issue)
         rev2 = Review.objects.create(reviewer=reviwer, issue=self.issue)
         rev3 = Review.objects.create(reviewer=reviwer, issue=self.issue)
-        self.issue.author.add(author)
+        self.issue.author = author
         self.issue.save()
         vote1 = Vote.objects.create(editor=editor, vote=True, issue=self.issue)
         vote2 = Vote.objects.create(editor=editor, vote=False, issue=self.issue)
