@@ -137,10 +137,10 @@ class PaperSource(models.Model):
     file = models.FileField(upload_to='sources/%Y/%m/%d/', null=True, blank=False)
     description = models.TextField(default='', blank=True, verbose_name=_('Description'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
-    issue = models.ForeignKey(Issue, related_name='sources', null=True, blank=True, verbose_name=('Issue'))
+    issue = models.ForeignKey(Issue, related_name='sources', null=True, blank=False, verbose_name=('Issue'))
     hashcode = models.CharField(default='', blank=True, verbose_name=_('Hash'), max_length=40)
     removed = models.BooleanField(default=False, blank=True, verbose_name=_('Remove'))
-    owner = models.OneToOneField(AbstractUserMixin, null=True, blank=False, verbose_name=_('Owner'), related_name='sources')
+    owner = models.ForeignKey(AbstractUserMixin, null=True, blank=False, verbose_name=_('Owner'), related_name='sources')
 
     def __str__(self):
         res = ''
@@ -177,10 +177,10 @@ class PaperSource(models.Model):
 
 @python_2_unicode_compatible
 class Vote(models.Model):
-    issue = models.ForeignKey(Issue, related_name='votes', default=None, null=True, verbose_name=_('Issue'))
-    vote = models.BooleanField(default=False, blank=False, verbose_name=_('Vote'))
+    issue = models.ForeignKey(Issue, related_name='votes', null=True, verbose_name=_('Issue'), blank=True)
+    vote = models.BooleanField(default=False, verbose_name=_('Vote'))
     comment = models.TextField(default='', blank=True, verbose_name=_('Comment'))
-    editor = models.OneToOneField(Editor, null=True, verbose_name=_('Editor'), blank=False)
+    editor = models.ForeignKey(Editor, null=True, verbose_name=_('Editor'), blank=False, related_name='votes')
     date = models.DateTimeField(auto_now=True, default=timezone.now())
 
     def __str__(self):

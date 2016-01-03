@@ -132,9 +132,6 @@ class VotesTest(TestCase):
     def test_vote_type(self):
         self.assertIsInstance(Vote._meta.get_field('vote'), models.BooleanField)
 
-    def test_vote_mandatory_attr(self):
-        self.assertFalse(Vote._meta.get_field('vote').blank)
-
     def test_vote_default_value(self):
         self.assertFalse(Vote._meta.get_field('vote').default)
 
@@ -151,23 +148,30 @@ class VotesTest(TestCase):
         self.assertTrue(Vote._meta.get_field('date').auto_now)
         self.assertFalse(Vote._meta.get_field('date').auto_now_add)
 
-    def test_editor_type(self):
-        self.assertIsInstance(Vote._meta.get_field('editor'), models.OneToOneField)
+    def test_vote_editor_type(self):
+        self.assertIsInstance(Vote._meta.get_field('editor'), models.ForeignKey)
 
-    def test_editor_nonmandatory(self):
-        self.assertTrue(Vote._meta.get_field('editor').blank)
+    def test_vote_editor_nonmandatory(self):
+        self.assertFalse(Vote._meta.get_field('editor').blank)
         self.assertTrue(Vote._meta.get_field('editor').null)
 
-    def test_issue_type(self):
-        self.assertIsInstance(Vote._meta.get_field('issue'), models.OneToOneField)
+    def test_vote_editor_related(self):
+        self.assertEqual(Vote._meta.get_field('editor').related_query_name(), 'votes')
+
+    def test_vote_issue_type(self):
+        self.assertIsInstance(Vote._meta.get_field('issue'), models.ForeignKey)
         self.assertTrue(Vote._meta.get_field('issue').null)
         self.assertTrue(Vote._meta.get_field('issue').blank)
+
+    def test_vote_issue_related(self):
+        self.assertEqual(Vote._meta.get_field('issue').related_query_name(), 'votes')
+
 
 class PaperSourceTests(TestCase):
     '''Source of each paper. It is used by the Issue instance.
     '''
     def setUp(self):
-        self.papersource = PaperSource.objects.create()
+        self.papersource = PaperSource.objects.create(owner=Author.objects.create())
         self.papersource1 = PaperSource.objects.create(description='new1')
         self.papersource2 = PaperSource.objects.create(description='new')
         self.papersource3 = PaperSource.objects.create(file=SimpleUploadedFile('new.txt','new'))
@@ -208,17 +212,20 @@ class PaperSourceTests(TestCase):
         self.assertIsInstance(PaperSource._meta.get_field('issue'), models.ForeignKey)
 
     def test_paper_issue_related_name(self):
-        self.assertEqual(PaperSource._meta.get_field('issue').related_name, 'sources')
+        self.assertEqual(PaperSource._meta.get_field('issue').related_query_name(), 'sources')
 
     def test_paper_owner_type(self):
-        self.assertIsInstance(PaperSource._meta.get_field('owner'), models.OneToOneField)
+        self.assertIsInstance(PaperSource._meta.get_field('owner'), models.ForeignKey)
 
     def test_paper_owner_mandatory(self):
         self.assertFalse(PaperSource._meta.get_field('owner').blank)
         self.assertTrue(PaperSource._meta.get_field('owner').null)
 
     def test_paper_owner_instance_type(self):
-        self.assertIsInstance(PaperSource._meta.get_field('owner').related_model, AbstractUserMixin)
+        self.assertIsInstance(self.papersource.owner, AbstractUserMixin)
+
+    def test_paper_owner_related(self):
+        self.assertEqual(PaperSource._meta.get_field('owner').related_query_name(),'sources')
 
     def test_paper_source_completeness(self):
         self.assertIsNotNone(self.papersource.file)
@@ -228,7 +235,7 @@ class PaperSourceTests(TestCase):
         self.assertIsNone(self.papersource.issue)
         self.assertIsNotNone(self.papersource.hashcode)
         self.assertFalse(self.papersource.removed)
-        self.assertIsNone(self.papersource.owner)
+        self.assertIsNotNone(self.papersource.owner)
 
     def test_paper_source_hash_changed(self):
         self.assertNotEqual(self.papersource.hashcode, self.papersource1.hashcode)
@@ -251,6 +258,7 @@ class IssueTest(TestCase):
         author = Author.objects.create(firstname='Mike', email='author@mail.com')
         reviwer = Reviewer.objects.create(firstname='John', email='sample@mail.com')
         editor = Editor.objects.create(firstname='John', email='editor@mail.com')
+        editor1 = Editor.objects.create(firstname='John', email='editor1@mail.com')
         self.issue = Issue.objects.create()
         rev1 = Review.objects.create(reviewer=reviwer, issue=self.issue)
         rev2 = Review.objects.create(reviewer=reviwer, issue=self.issue)
@@ -258,7 +266,7 @@ class IssueTest(TestCase):
         self.issue.author = author
         self.issue.save()
         vote1 = Vote.objects.create(editor=editor, vote=True, issue=self.issue)
-        vote2 = Vote.objects.create(editor=editor, vote=False, issue=self.issue)
+        vote2 = Vote.objects.create(editor=editor1, vote=False, issue=self.issue)
         vote1.save()
         vote2.save()
         answer1 = Answer.objects.create(author=author, review=rev1)
@@ -397,7 +405,7 @@ class ArtExtraTests(TestCase):
         artextra_form = ArtExtraForm(instance=self.artextra)
         self.assertFalse(artextra_form.is_valid()) # pages assumed to be mandatory
         bound_artextra_form = ArtExtraForm({'doi':'10.17581/bp.2016.05102', 'udk':'', 'pages':'1-2'}, instance=self.artextra)
-        self.assertTrue(res)
+        self.assertTrue(bound_artextra_form.is_valid())
         bound_artextra_form = ArtExtraForm({'doi':'//df//sdf', 'udk':'', 'pages':'1-2'}, instance=self.artextra)
         self.assertFalse(bound_artextra_form.is_valid())
 
