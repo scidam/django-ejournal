@@ -95,8 +95,12 @@ class Invitation(models.Model):
     def is_expired(self):
         return False if (self.created <= timezone.now()) and (timezone.now() <= self.created + datetime.timedelta(seconds=self.duration)) else True
 
+
 class ArtExtra(models.Model):
-    pass
+    udk = models.CharField(max_length=50, blank=True, default='')
+    doi = models.CharField(max_length=50, blank=True, default='')
+    pages = models.CharField(max_length=10, blank=False, default='')
+    permalink = models.CharField(max_length=255, blank=True, default='')
 
 class Issue(models.Model):
     coauthors = models.ManyToManyField(AbstractUserMixin, null=True, blank=True, verbose_name=_('Authors'), related_name='issues_all')
