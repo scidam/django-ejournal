@@ -359,3 +359,12 @@ class InvitationTests(TestCase):
 
     def test_is_expired_true(self):
         self.assertTrue(self.invexp.is_expired)
+
+    def test_invitation_role(self):
+        '''Each invitation has roles:
+        Editor invitation
+        Reviewer invitation
+        '''
+        self.assertIsInstance(Invitation._meta.get_field('role'), models.CharField)
+        self.assertFalse(Invitation._meta.get_field('role').blank)
+        self.assertIsNotNone(Invitation._meta.get_field('role').choices)
