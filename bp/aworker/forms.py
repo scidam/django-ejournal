@@ -1,5 +1,8 @@
 import re
+
 from django import forms
+from django.utils.translation import ugettext as _
+
 from .models import Article, ArtExtra
 
 
@@ -21,7 +24,7 @@ class ArtExtraForm(forms.ModelForm):
         data = self.cleaned_data.get('doi')
         if data:
             if not doi_pat.match(data):
-                raise forms.ValidationError("Improper format of DOI", code='invalid')
+                raise forms.ValidationError(_("Improper format of DOI"), code='invalid')
         return data
 
     def clean_udk(self):
