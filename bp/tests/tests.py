@@ -129,6 +129,39 @@ class VotesTest(TestCase):
         self.assertIsNotNone(self.vt.editor)
         self.assertIsNotNone(self.vt.date)
 
+    def test_vote_type(self):
+        self.assertIsInstance(Vote._meta.fields.get_field('vote'), models.BooleanField)
+
+    def test_vote_mandatory_attr(self):
+        self.assertFalse(Vote._meta.fields.get_field('vote').blank)
+
+    def test_vote_default_value(self):
+        self.assertFalse(Vote._meta.fields.get_field('vote').default)
+
+    def test_vote_comment_type(self):
+        self.assertIsInstance(Vote._meta.fields.get_field('comment'), models.TextField)
+
+    def test_vote_comment_default(self):
+        self.assertEqual(Vote._meta.fields.get_field('comment').default, '')
+
+    def test_vote_optional(self):
+        self.assertTrue(Vote._meta.fields.get_field('vote').blank)
+
+    def test_vote_date_update(self):
+        self.assertTrue(Vote._meta.fields.get_field('vote').auto_now)
+        self.assertFalse(Vote._meta.fields.get_field('vote').auto_now_add)
+
+    def test_editor_type(self):
+        self.assertIsInstance(Vote._meta.fields.get_field('editor'), models.OneToOneField)
+
+    def test_editor_nonmandatory(self):
+        self.assertTrue(Vote._meta.fields.get_field('editor').blank)
+        self.assertTrue(Vote._meta.fields.get_field('editor').null)
+
+    def test_issue_type(self):
+        self.assertIsInstance(Vote._meta.fields.get_field('issue'), models.OneToOneField)
+        self.assertTrue(Vote._meta.fields.get_field('issue').null)
+        self.assertTrue(Vote._meta.fields.get_field('issue').blank)
 
 class PaperSourceTests(TestCase):
     '''Source of each paper. It is used by the Issue instance.
