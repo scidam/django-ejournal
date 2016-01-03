@@ -249,7 +249,7 @@ class ArticleTests(TestCase):
         self.art = Article.objects.create(name='About winds influences on the spiritual life of the clergy?',
                                      published=True,
                                      pub_date=timezone.now(),
-                                     authors=Author.objects.create(name='John Doe', email='me@mail.com'),
+                                     authors=Author.objects.create(firstname='John Doe', email='me@mail.com'),
                                      extrainfo=ArtExtra.objects.create()
                                      )
 

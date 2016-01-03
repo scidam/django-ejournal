@@ -177,7 +177,7 @@ class Vote(models.Model):
     role = models.CharField(max_length=2, choices=AbstractUserMixin.ROLE_CHOICES,
                             default=AbstractUserMixin.ROLE_CHOICES[0][0]
                             )
-    
+
     def __str__(self):
         if self.vote:
             res = _('Accepted')
