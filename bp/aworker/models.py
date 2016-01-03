@@ -180,7 +180,7 @@ class Vote(models.Model):
     issue = models.ForeignKey(Issue, related_name='votes', default=None, null=True, verbose_name=_('Issue'))
     vote = models.BooleanField(default=False, blank=False, verbose_name=_('Vote'))
     comment = models.TextField(default='', blank=True, verbose_name=_('Comment'))
-    editor = models.ForeignKey(Editor, null=True, verbose_name=_('Editor'))
+    editor = models.OneToOneField(Editor, null=True, verbose_name=_('Editor'), blank=False)
     date = models.DateTimeField(auto_now=True, default=timezone.now())
 
     def __str__(self):
