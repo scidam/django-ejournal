@@ -1,3 +1,5 @@
+from Crypto import SelfTest
+
 from aworker.forms import ArtExtraForm, ArticleForm
 from aworker.models import (Article, Invitation, Author,
                      Reviewer, Editor, Issue,
@@ -493,12 +495,35 @@ class AnswerTests(TestCase):
         self.assertEqual(str(self.answer), 'By Mike F.: %s'%self.created)
 
     def test_answer_completeness(self):
-        #Just to test existing fields
+        # Just to test existing fields
         self.assertIsNotNone(self.answer.created)
         self.assertIsNotNone(self.answer.attachments)
         self.assertIsNotNone(self.answer.review)
         self.assertEqual(self.answer.description, 'I am right!')
         self.assertIsNotNone(self.answer.file.name)
+
+    def test_answer_created(self):
+        self.assertTrue(Answer._meta.get_field('created').auto_now_add)
+
+    def test_answer_review_type(self):
+        self.assertIsInstance(Answer._meta.get_field('review'), models.OneToOneField)
+
+    def test_answer_file_nonmandatory(self):
+        self.assertTrue(Answer._meta.get_field('file').blank)
+        self.assertTrue(Answer._meta.get_field('file').null)
+
+    def test_answer_description_type(self):
+        self.assertIsInstance(Answer._meta.get_field('description'), models.TextField)
+
+    def test_answer_description_nonmandatory(self):
+        self.assertTrue(Answer._meta.get_field('description').blank)
+
+    def test_answer_description_default(self):
+        self.assertEqual(Answer._meta.get_field('description').default, '')
+
+    def test_answer_review_mandatory(self):
+        self.assertFalse(Answer._meta.get_field('review').blank)
+        self.assertTrue(Answer._meta.get_field('review').null)
 
 
 class InvitationTests(TestCase):
