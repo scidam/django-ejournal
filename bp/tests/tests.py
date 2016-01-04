@@ -1,10 +1,11 @@
-from Crypto import SelfTest
 
-from aworker.forms import ArtExtraForm, ArticleForm
+
+from aworker.forms import ArtExtraForm, ArticleForm, AbstractUserForm
 from aworker.models import (Article, Invitation, Author,
                      Reviewer, Editor, Issue,
                      ArtExtra, Review, PaperSource,
                      Vote, Answer, AbstractUserMixin)
+from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
@@ -15,7 +16,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 
-class AuthorTest(TestCase):
+class AbstractUserMixinTest(TestCase):
     '''Basic author behaviour and properties
     '''
 
@@ -48,9 +49,126 @@ class AuthorTest(TestCase):
                                       role='AU'
                                       )
 
-    def test_author_valid(self):
+    def test_author_has_user(self):
         ''' Test for auth1 assumed to be valid one'''
         self.assertIsInstance(self.auth1.user, User)
+
+    def test_author_user_attrs(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('user').null)
+
+    def test_author_user_non_editable(self):
+        self.assertFalse(AbstractUserMixin._meta.get_field('user').editable)
+
+    def test_author_email_mandatory(self):
+        self.assertFalse(AbstractUserMixin._meta.get_field('email').blank)
+
+    def test_author_email_unique(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('email').unique)
+
+    def test_author_email_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('email').default, '')
+
+    def test_author_email_type(self):
+        self.assertIsInstance(AbstractUserMixin._meta.get_field('email'), models.EmailField)
+
+    def test_author_role_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('role').default, 'AU')
+
+    def test_author_role_mandatory(self):
+        self.assertFalse(AbstractUserMixin._meta.get_field('role').blank)
+
+    def test_author_role_attribute(self):
+        self.assertIsNotNone(AbstractUserMixin._meta.get_field('role').choices)
+
+    def test_author_firstname_mandatory(self):
+        self.assertFalse(AbstractUserMixin._meta.get_field('firstname').blank)
+
+    def test_author_firstname_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('firstname').default, '')
+
+    def test_author_firstname_type(self):
+        self.assertIsInstance(AbstractUserMixin._meta.get_field('firstname'), models.CharField)
+
+    def test_author_firstname_maxlen(self):
+        self.assertGreater(AbstractUserMixin._meta.get_field('firstname').max_length, 50)
+
+    def test_author_secondname_nonmandatory(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('secondname').blank)
+
+    def test_author_secondname_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('secondname').default, '')
+
+    def test_author_secondname_type(self):
+        self.assertIsInstance(AbstractUserMixin._meta.get_field('secondname'), models.CharField)
+
+    def test_author_secondname_maxlen(self):
+        self.assertGreater(AbstractUserMixin._meta.get_field('secondname').max_length, 50)
+
+    def test_author_thirdname_nonmandatory(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('thirdname').blank)
+
+    def test_author_thirdname_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('thirdname').default, '')
+
+    def test_author_thirdname_type(self):
+        self.assertIsInstance(AbstractUserMixin._meta.get_field('thirdname'), models.CharField)
+
+    def test_author_thirdname_maxlen(self):
+        self.assertGreater(AbstractUserMixin._meta.get_field('thirdname').max_length, 50)
+
+    def test_author_country_code_type(self):
+        self.assertIsInstance(AbstractUserMixin._meta.get_field('country'), models.CharField)
+
+    def test_author_country_non_mandatory(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('country').blank)
+
+    def test_author_country_maxlen(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('country').max_length, 3)
+
+    def test_author_country_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('country').default, '')
+
+    def test_author_phone_nonmandatory(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('phone').blank)
+
+    # TODO: Probably, it should be replaced with third-party phone-number-field for Django
+
+    def test_author_phone_formvalidation(self):
+        self.assertFalse(AbstractUserForm(instance=self.auth1).is_valid())
+        self.assertIsInstance(AbstractUserForm, forms.ModelForm)
+        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415'},
+                             instance=self.auth1)
+        self.assertTrue(f.is_valid())
+        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+748d83s323'},
+                             instance=self.auth1)
+        self.assertFalse(f.is_valid())
+
+    def test_author_phone_maxlen(self):
+        self.assertGreater(AbstractUserMixin._meta.get_field('phone').max_length, 15)
+
+    def test_author_phone_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('phone').default, '')
+
+    def test_zipcode_nonmandatory(self):
+        self.assertTrue(AbstractUserMixin._meta.get_field('zipcode').blank)
+
+    def test_zipcode_length(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('zipcode').max_length, 10)
+
+    def test_zipcode_default(self):
+        self.assertEqual(AbstractUserMixin._meta.get_field('zipcode').default, '')
+
+    def test_zipcode_form_validation(self):
+        self.assertFalse(AbstractUserForm(instance=self.auth1).is_valid())
+        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415',
+                              'zipcode': '690125'},
+                             instance=self.auth1)
+        self.assertTrue(f.is_valid())
+        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415',
+                              'zipcode': '69O125'},
+                             instance=self.auth1)
+        self.assertFalse(f.is_valid())
+    
 
     def test_author_invalid(self):
         ''' auth2 is invalid instance'''
