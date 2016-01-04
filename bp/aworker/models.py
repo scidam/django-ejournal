@@ -71,14 +71,18 @@ class AbstractUserMixin(models.Model):
 class Author(AbstractUserMixin):
     pass
 
+
 class Reviewer(AbstractUserMixin):
     pass
+
 
 class Editor(AbstractUserMixin):
     pass
 
+
 class Article(models.Model):
     pass
+
 
 @python_2_unicode_compatible
 class Invitation(models.Model):
@@ -106,12 +110,14 @@ class ArtExtra(models.Model):
     pages = models.CharField(max_length=10, blank=False, default='')
     permalink = models.CharField(max_length=255, blank=True, default='')
 
+
 class Issue(models.Model):
     coauthors = models.ManyToManyField(AbstractUserMixin, null=True, blank=True, verbose_name=_('Authors'), related_name='issues_all')
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated'), blank=True, default=timezone.now())
     paper = models.ForeignKey(Article, null=True, blank=True, verbose_name=_('Paper'))
     author = models.OneToOneField(AbstractUserMixin, blank=True, null=True, verbose_name=_('Main author'), related_name='issues')
+
 
 @python_2_unicode_compatible
 class Review(models.Model):
@@ -147,7 +153,7 @@ class PaperSource(models.Model):
         if self.description:
             res += self.description[:30]
         if self.file:
-            res += ' (file: %s)'%self.file.filename
+            res += ' (file: %s)'%self.filename
         return res
 
     @property
