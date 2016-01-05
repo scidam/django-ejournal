@@ -487,7 +487,6 @@ class IssueTest(TestCase):
         self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.reviews)
         self.assertIsNotNone(self.issue.updated)
-        self.assertIsInstance(self.issue.paper, Article) # Link to the article instance! output paper
         self.assertIsNotNone(self.issue.sources)
 
     def test_issue_created_type(self):
