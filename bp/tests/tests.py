@@ -496,6 +496,9 @@ class IssueTest(TestCase):
     def test_issue_created_autofield(self):
         self.assertTrue(Issue._meta.get_field('created').auto_now_add)
 
+    def test_issue_updated(self):
+        self.assertTrue(Issue._meta.get_field('updated').auto_now)
+
     def test_issue_author_type(self):
         self.assertIsInstance(Issue._meta.get_field('author'), models.ForeignKey)
         self.assertIsInstance(self.issue.author, AbstractUserMixin)
@@ -521,6 +524,7 @@ class IssueTest(TestCase):
         self.assertTrue(self.issue.reviewers.exists())
         self.assertIn(self.reviewer, self.issue.reviewers.all())
         self.assertEqual(self.issue.reviewers.count(), 1)
+
 
 
     def test_issue_deletion(self):
@@ -696,6 +700,7 @@ class ReviewTests(TestCase):
         self.asserTrue(Review._meta.get_field('status').blank)
 
     def test_review_status_default(self):
+        'Default review status is REJECTED'
         self.asserEqual(Review._meta.get_field('status').default, 'RE')
 
 
