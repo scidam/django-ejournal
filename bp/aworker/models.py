@@ -93,7 +93,7 @@ class Coauthor(models.Model):
     issue = models.ForeignKey('Issue', blank=False, null=True,
                               verbose_name=_('Issue'),
                               related_name='coauthors')
-    
+
 class Article(models.Model):
     pass
 
@@ -126,7 +126,6 @@ class ArtExtra(models.Model):
 
 
 class Issue(models.Model):
-    coauthors = models.ManyToManyField(AbstractUserMixin, null=True, blank=True, verbose_name=_('Authors'), related_name='issues_all')
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated'), blank=True, default=timezone.now())
     paper = models.ForeignKey(Article, null=True, blank=True, verbose_name=_('Paper'))
