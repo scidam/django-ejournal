@@ -484,7 +484,6 @@ class IssueTest(TestCase):
 
     def test_issue_completeness(self):
         self.assertIsNotNone(self.issue.created)
-        self.assertIsNotNone(self.issue.authors)
         self.assertIsNotNone(self.issue.reviews)
         self.assertIsNotNone(self.issue.answers)
         self.assertIsNotNone(self.issue.updated)
@@ -497,17 +496,16 @@ class IssueTest(TestCase):
     def test_issue_created_autofield(self):
         self.assertTrue(Issue._meta.get_field('created').auto_now_add)
 
-    def test_issue_coauthors_attributes(self):
-        self.assertTrue(Issue._meta.get_field('coauthors').blank)
-        self.assertTrue(Issue._meta.get_field('coauthors').null)
-
     def test_issue_main_author_type(self):
-        self.assertIsInstance(Issue._meta.get_field('author'), models.OneToOneField)
+        self.assertIsInstance(Issue._meta.get_field('author'), models.ForeignKey)
         self.assertIsInstance(self.issue.author, AbstractUserMixin)
 
     def test_issue_main_author_attributes(self):
         self.assertFalse(Issue._meta.get_field('author').blank)
         self.assertTrue(Issue._meta.get_field('author').null)
+    
+    def test_issue_main_author_related_name(self):
+         self.assertEqual(Issue._meta.get_field('author').related_query_name(), 'issues')
 
     def test_issue_reviewers_type(self):
         self.assertIsInstance(Issue._meta.get_field('reviewers'), models.ManyToManyField)
