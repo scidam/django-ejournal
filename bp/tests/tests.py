@@ -440,8 +440,19 @@ class CoauthorModelTests(TestCase):
         self.assertTrue(Coauthor._meta.get_field('author').null)
 
     def test_coauthor_object_creation(self):
-        coauth = Coauthor.objects.create(author=self.author, firstname='Bubble', secondname='gum', email='mail@mail.com')
+        coauth = Coauthor.objects.create(author=self.author, firstname='Bubble',
+                                         secondname='gum', email='mail@mail.com')
         self.assertIsInstance(coauth, Coauthor)
+
+    def test_coauthor_issue_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('issue'), models.ForeignKey)
+
+    def test_coauthor_issue_mandatory(self):
+        self.assertFalse(Coauthor._meta.get_field('issue').blank)
+        self.assertTrue(Coauthor._meta.get_field('issue').null)
+
+    def test_coauthor_issue_related_name(self):
+        self.assertTrue(Coauthor._meta.get_field('issue').related_query_name(), 'coauthors')
 
 
 class IssueTest(TestCase):
