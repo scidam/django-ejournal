@@ -479,13 +479,13 @@ class IssueTest(TestCase):
         vote2.save()
         answer1 = Answer.objects.create(review=rev1)
         answer2 = Answer.objects.create(review=rev3)
+        self.reviewer = reviwer
         p1 = PaperSource.objects.create(issue=self.issue, description='Just empty')
         p2 = PaperSource.objects.create(issue=self.issue, description='Another empty')
 
     def test_issue_completeness(self):
         self.assertIsNotNone(self.issue.created)
         self.assertIsNotNone(self.issue.reviews)
-        self.assertIsNotNone(self.issue.answers)
         self.assertIsNotNone(self.issue.updated)
         self.assertIsInstance(self.issue.paper, Article) # Link to the article instance! output paper
         self.assertIsNotNone(self.issue.sources)
@@ -496,16 +496,16 @@ class IssueTest(TestCase):
     def test_issue_created_autofield(self):
         self.assertTrue(Issue._meta.get_field('created').auto_now_add)
 
-    def test_issue_main_author_type(self):
+    def test_issue_author_type(self):
         self.assertIsInstance(Issue._meta.get_field('author'), models.ForeignKey)
         self.assertIsInstance(self.issue.author, AbstractUserMixin)
 
-    def test_issue_main_author_attributes(self):
+    def test_issue_author_attributes(self):
         self.assertFalse(Issue._meta.get_field('author').blank)
         self.assertTrue(Issue._meta.get_field('author').null)
-    
-    def test_issue_main_author_related_name(self):
-         self.assertEqual(Issue._meta.get_field('author').related_query_name(), 'issues')
+
+    def test_issue_author_related_name(self):
+        self.assertEqual(Issue._meta.get_field('author').related_query_name(), 'issues')
 
     def test_issue_reviewers_type(self):
         self.assertIsInstance(Issue._meta.get_field('reviewers'), models.ManyToManyField)
@@ -522,18 +522,13 @@ class IssueTest(TestCase):
         self.assertIn(self.reviewer, self.issue.reviewers.all())
         self.assertEqual(self.issue.reviewers.count(), 1)
 
+
     def test_issue_deletion(self):
-        if not self.issue.reviewers.exists():
-            pk = self.issue.pk
-            self.issue.delete()
-            with self.assertRaises(Issue.DoesNotExist):
-                Issue.objects.get(id=pk)
-        self.issue.reviewers.add(self.reviwer)
-        self.issue.save()
-        pk = self.issue.pk
-        self.issue.delete()  # Pass quiet by default
-        self.assertTrue(Issue.objects.exists())
-        self.assertEqual(self.issue, Issue.objects.get(id=pk))
+        '''
+        Issue could be deleted if no reviewers were attached to it.
+        This test tries to delete issue instance with reviewers and without ones.
+        '''
+
 
 
 class ArticleTests(TestCase):
