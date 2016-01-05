@@ -4,7 +4,7 @@ from aworker.forms import ArtExtraForm, ArticleForm, AbstractUserForm
 from aworker.models import (Article, Invitation, Author,
                      Reviewer, Editor, Issue,
                      ArtExtra, Review, PaperSource,
-                     Vote, Answer, AbstractUserMixin)
+                     Vote, Answer, AbstractUserMixin, Coauthor)
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -371,6 +371,77 @@ class PaperSourceTests(TestCase):
         self.assertEqual(len(self.papersource1.hashcode), 40)
 
 
+class CoauthorModelTests(TestCase):
+    def setUp(self):
+        self.author = Author.objects.create(firstname='Mike', email='author@mail.com')
+
+    def test_coauthor_firstname_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('firstname'), models.CharField)
+
+    def test_coauthor_firstname_maxlen(self):
+        self.assertEqual(Coauthor._meta.get_field('firstname').max_length, 100)
+
+    def test_coauthor_firstname_mandatory(self):
+        self.assertFalse(Coauthor._meta.get_field('firstname').blank)
+
+    def test_coauthor_firstname_default(self):
+        self.assertEqual(Coauthor._meta.get_field('firstname').default, '')
+
+    def test_coauthor_secondname_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('secondname'), models.CharField)
+
+    def test_coauthor_secondname_maxlen(self):
+        self.assertEqual(Coauthor._meta.get_field('secondname').max_length, 100)
+
+    def test_coauthor_secondname_nonmandatory(self):
+        self.assertTrue(Coauthor._meta.get_field('secondname').blank)
+
+    def test_coauthor_secondname_default(self):
+        self.assertEqual(Coauthor._meta.get_field('secondname').default, '')
+
+    def test_coauthor_thirdname_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('thirdname'), models.CharField)
+
+    def test_coauthor_thirdname_maxlen(self):
+        self.assertEqual(Coauthor._meta.get_field('thirdname').max_length, 100)
+
+    def test_coauthor_thirdname_nonmandatory(self):
+        self.assertTrue(Coauthor._meta.get_field('thirdname').blank)
+
+    def test_coauthor_thirdname_default(self):
+        self.assertEqual(Coauthor._meta.get_field('thirdname').default, '')
+
+    def test_coauthor_email_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('email'), models.EmailField)
+
+    def test_coauthor_email_nonmandatory(self):
+        self.assertTrue(Coauthor._meta.get_field('email').blank)
+
+    def test_coauthor_email_default(self):
+        self.assertEqual(Coauthor._meta.get_field('email').default,'')
+
+    def test_coauthor_organization_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('organization'), models.CharField)
+
+    def test_coauthor_organization_maxlen(self):
+        self.assertEqual(Coauthor._meta.get_field('organization').max_length, 500)
+
+    def test_coauthor_organization_nonmandatory(self):
+        self.assertTrue(Coauthor._meta.get_field('organization').blank)
+
+    def test_coauthor_organization_default(self):
+        self.assertEqual(Coauthor._meta.get_field('organization').default, '')
+
+    def test_coauthor_author_field_type(self):
+        self.assertIsInstance(Coauthor._meta.get_field('author'), models.ForeignKey)
+
+    def test_coauthor_author_mandatory(self):
+        self.assertFalse(Coauthor._meta.get_field('author').blank)
+        self.assertTrue(Coauthor._meta.get_field('author').null)
+
+    def test_coauthor_object_creation(self):
+        coauth = Coauthor.objects.create(author=self.author, firstname='Bubble', secondname='gum', email='mail@mail.com')
+        self.assertIsInstance(coauth, Coauthor)
 
 
 class IssueTest(TestCase):
