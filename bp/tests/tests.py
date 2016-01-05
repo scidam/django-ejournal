@@ -135,10 +135,11 @@ class AbstractUserMixinTest(TestCase):
 
     def test_author_phone_formvalidation(self):
         self.assertFalse(AbstractUserForm(instance=self.auth1).is_valid())
-        self.assertIsInstance(AbstractUserForm, forms.ModelForm)
+        self.assertIsSubclass(AbstractUserForm, forms.ModelForm)
         f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415'},
                              instance=self.auth1)
         self.assertTrue(f.is_valid())
+        print f.errors
         f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+748d83s323'},
                              instance=self.auth1)
         self.assertFalse(f.is_valid())
@@ -161,14 +162,14 @@ class AbstractUserMixinTest(TestCase):
     def test_zipcode_form_validation(self):
         self.assertFalse(AbstractUserForm(instance=self.auth1).is_valid())
         f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415',
-                              'zipcode': '690125'},
+                              'zipcode': '690125', 'role': 'AU'},
                              instance=self.auth1)
         self.assertTrue(f.is_valid())
         f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415',
-                              'zipcode': '69O125'},
+                              'zipcode': '69O125', 'role': 'AU'},
                              instance=self.auth1)
         self.assertFalse(f.is_valid())
-    
+
 
     def test_author_invalid(self):
         ''' auth2 is invalid instance'''
@@ -370,6 +371,8 @@ class PaperSourceTests(TestCase):
         self.assertEqual(len(self.papersource1.hashcode), 40)
 
 
+
+
 class IssueTest(TestCase):
     '''Initially issue is created by the author
     '''
@@ -389,8 +392,8 @@ class IssueTest(TestCase):
         vote2 = Vote.objects.create(editor=editor1, vote=False, issue=self.issue)
         vote1.save()
         vote2.save()
-        answer1 = Answer.objects.create(author=author, review=rev1)
-        answer2 = Answer.objects.create(author=author, review=rev3)
+        answer1 = Answer.objects.create(review=rev1)
+        answer2 = Answer.objects.create(review=rev3)
         p1 = PaperSource.objects.create(issue=self.issue, description='Just empty')
         p2 = PaperSource.objects.create(issue=self.issue, description='Another empty')
 
@@ -407,7 +410,7 @@ class IssueTest(TestCase):
         self.assertIsInstance(Issue._meta.get_field('created'), models.DateTimeField)
 
     def test_issue_created_autofield(self):
-        self.assertTrue(Issue._meta.get_field('created').auto_now)
+        self.assertTrue(Issue._meta.get_field('created').auto_now_add)
 
     def test_issue_coauthors_attributes(self):
         self.assertTrue(Issue._meta.get_field('coauthors').blank)
@@ -592,7 +595,7 @@ class AnswerTests(TestCase):
 
     def setUp(self):
         self.author = Author.objects.create(firstname='Mike', email='iamauthor@mail.com', secondname='Form')
-        self.issue = Issue.objects.create()
+        self.issue = Issue.objects.create(author = self.author)
         self.reviewer = Reviewer.objects.create(firstname='John', email='sample@mail.com',
                                                 secondname='Doe')
         self.review = Review.objects.create(reviewer=self.reviewer, issue=self.issue,
@@ -607,10 +610,10 @@ class AnswerTests(TestCase):
         self.answer.save()
         # testing for listing all attachments
         self.assertIn(self.attach1, self.answer.attachments.all())
-        self.assertIn(self.attach2, self.answer.attachemnts.all())
+        self.assertIn(self.attach2, self.answer.attachments.all())
 
     def test_str_method_on_answer(self):
-        self.assertEqual(str(self.answer), 'By Mike F.: %s'%self.created)
+        self.assertEqual(str(self.answer), 'By Mike F.: %s'%self.answer.created)
 
     def test_answer_completeness(self):
         # Just to test existing fields
@@ -618,7 +621,7 @@ class AnswerTests(TestCase):
         self.assertIsNotNone(self.answer.attachments)
         self.assertIsNotNone(self.answer.review)
         self.assertEqual(self.answer.description, 'I am right!')
-        self.assertIsNotNone(self.answer.file.name)
+        self.assertIsNone(self.answer.file.name)
 
     def test_answer_created(self):
         self.assertTrue(Answer._meta.get_field('created').auto_now_add)

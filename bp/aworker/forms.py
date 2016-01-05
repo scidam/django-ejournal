@@ -6,9 +6,9 @@ from django.utils.translation import ugettext as _
 from .models import Article, ArtExtra, AbstractUserMixin
 
 
-doi_pat = re.compile(r'10\.\d{4,}\/bp\.\d{4}\.\d{4,}')
-udk_pat = re.compile(r'[0-9]+[;\:\.0-9]+')
-
+doi_pat = re.compile(r'\s?10\.\d{4,}\/bp\.\d{4}\.\d{4,}\s?$')
+udk_pat = re.compile(r'\s?[0-9]+[;\:\.0-9]+\s?$')
+zipcode_pat = re.compile(r'\s?\d+\s?$')
 
 class ArticleForm(forms.ModelForm):
     class Meta:
@@ -38,3 +38,11 @@ class ArtExtraForm(forms.ModelForm):
 class AbstractUserForm(forms.ModelForm):
     class Meta:
         model = AbstractUserMixin
+        fields = '__all__'
+
+    def clean_zipcode(self):
+        data = self.cleaned_data.get('zipcode')
+        if data:
+            if not zipcode_pat.match(data):
+                raise forms.ValidationError(_("Improper format of zipcode"), code='invalid')
+        return data

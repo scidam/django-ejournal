@@ -20,8 +20,8 @@ class AbstractUserMixin(models.Model):
                     ('ED', _('Editor')),
                     ('RE', _('Reviewer'))
                     )
-    firstname = models.CharField(max_length=100, verbose_name=_('First name'))
-    email = models.EmailField(blank=False, unique=True, verbose_name=_('Email'))
+    firstname = models.CharField(max_length=100, verbose_name=_('First name'), blank=False, default='')
+    email = models.EmailField(blank=False, unique=True, verbose_name=_('Email'), default='')
     secondname = models.CharField(max_length=100, blank=True, default='',
                                   verbose_name=_('Family name'))
     thirdname = models.CharField(max_length=100, blank=True, default='',
@@ -42,7 +42,7 @@ class AbstractUserMixin(models.Model):
     city = models.CharField(max_length=100, default='', blank=True,
                             verbose_name=_('City'))
     role = models.CharField(max_length=2, choices=ROLE_CHOICES, default=ROLE_CHOICES[0][0])
-    phone = models.CharField(max_length=15, default='', blank=True)
+    phone = models.CharField(max_length=20, default='', blank=True)
 
     user = models.ForeignKey(User, null=True, blank=True, editable=False)
 
@@ -116,7 +116,7 @@ class Issue(models.Model):
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated'), blank=True, default=timezone.now())
     paper = models.ForeignKey(Article, null=True, blank=True, verbose_name=_('Paper'))
-    author = models.OneToOneField(AbstractUserMixin, blank=True, null=True, verbose_name=_('Main author'), related_name='issues')
+    author = models.OneToOneField(AbstractUserMixin, blank=False, null=True, verbose_name=_('Main author'), related_name='issues')
 
 
 @python_2_unicode_compatible
@@ -197,13 +197,25 @@ class Vote(models.Model):
         res += ': %s'%self.date
         return res
 
+
+@python_2_unicode_compatible
 class Answer(models.Model):
     attachments = models.ManyToManyField(PaperSource, related_name='answers', blank=True, null=True, verbose_name=_('Attachments'))
     review = models.OneToOneField(Review, blank=False, null=True, verbose_name=_('Review'))
-    description = models.TextField(default='', blank=True, verobse_name=_('Description'))
+    description = models.TextField(default='', blank=True, verbose_name=_('Description'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'))
     file = models.FileField(blank=True, null=True, verbose_name=_('File'))
 
+    def __str__(self):
+        res = ''
+        if self.review.issue.author:
+            res += 'By %s' % self.review.issue.author.firstname
+            if self.review.issue.author.secondname:
+                res += ' %s.'%self.review.issue.author.secondname.title()[0]
+            res += ': %s'%self.created
+        else:  # May be detalized in future
+            res += 'Answer %s: %s'%(self.pk, self.created)
+        return res
 
 def compute_hash_on_paperissue(sender, instance, *args, **kwargs):
     if not instance.hashcode:
