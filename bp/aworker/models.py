@@ -199,6 +199,10 @@ class Vote(models.Model):
 
 class Answer(models.Model):
     attachments = models.ManyToManyField(PaperSource, related_name='answers', blank=True, null=True, verbose_name=_('Attachments'))
+    review = models.OneToOneField(Review, blank=False, null=True, verbose_name=_('Review'))
+    description = models.TextField(default='', blank=True, verobse_name=_('Description'))
+    created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'))
+    file = models.FileField(blank=True, null=True, verbose_name=_('File'))
 
 
 def compute_hash_on_paperissue(sender, instance, *args, **kwargs):
