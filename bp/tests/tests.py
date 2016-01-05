@@ -686,7 +686,7 @@ class ReviewTests(TestCase):
 
     def test_review_status_choices(self):
         CHOICES = (('AC', 'Accepted'),
-                   ('DE', 'Detailed explanation required')
+                   ('DE', 'Detailed explanation required'),
                    ('CO', 'Correction required'),
                    ('RE', 'Rejected')
                    )
@@ -696,11 +696,11 @@ class ReviewTests(TestCase):
         self.assertEqual(Review._meta.get_field('status').max_length, 2)
 
     def test_review_status_mandatory(self):
-        self.asserTrue(Review._meta.get_field('status').blank)
+        self.assertFalse(Review._meta.get_field('status').blank)
 
     def test_review_status_default(self):
         'Default review status is REJECTED'
-        self.asserEqual(Review._meta.get_field('status').default, 'RE')
+        self.assertEqual(Review._meta.get_field('status').default, 'RE')
 
 
 class AnswerTests(TestCase):

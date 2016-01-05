@@ -138,7 +138,7 @@ class Issue(models.Model):
 @python_2_unicode_compatible
 class Review(models.Model):
     STATUS_CHOICES = (('AC', 'Accepted'),
-                   ('DE', 'Detailed explanation required')
+                   ('DE', 'Detailed explanation required'),
                    ('CO', 'Correction required'),
                    ('RE', 'Rejected')
                    )
