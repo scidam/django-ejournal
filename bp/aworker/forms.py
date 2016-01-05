@@ -9,6 +9,7 @@ from .models import Article, ArtExtra, AbstractUserMixin
 doi_pat = re.compile(r'\s?10\.\d{4,}\/bp\.\d{4}\.\d{4,}\s?$')
 udk_pat = re.compile(r'\s?[0-9]+[;\:\.0-9]+\s?$')
 zipcode_pat = re.compile(r'\s?\d+\s?$')
+phone_pat = re.compile(r'\s?\+?\d[\d\-]+\s?$')
 
 class ArticleForm(forms.ModelForm):
     class Meta:
@@ -46,3 +47,11 @@ class AbstractUserForm(forms.ModelForm):
             if not zipcode_pat.match(data):
                 raise forms.ValidationError(_("Improper format of zipcode"), code='invalid')
         return data
+
+    def clean_phone(self):
+        data = self.cleaned_data.get('phone')
+        if data:
+            if not phone_pat.match(data):
+                raise forms.ValidationError(_("Improper format of phone"), code='invalid')
+        return data
+    

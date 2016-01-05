@@ -136,11 +136,10 @@ class AbstractUserMixinTest(TestCase):
     def test_author_phone_formvalidation(self):
         self.assertFalse(AbstractUserForm(instance=self.auth1).is_valid())
         self.assertTrue(issubclass(AbstractUserForm, forms.ModelForm))
-        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415'},
+        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+11051565415', 'zipcode': '12321'},
                              instance=self.auth1)
         self.assertTrue(f.is_valid())
-        print f.errors
-        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+748d83s323'},
+        f = AbstractUserForm({'firstname' : 'John', 'email': 'sample@mail.com', 'phone':'+748d83s323','zipcode': '12321'},
                              instance=self.auth1)
         self.assertFalse(f.is_valid())
 
