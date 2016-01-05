@@ -93,7 +93,9 @@ class Coauthor(models.Model):
     issue = models.ForeignKey('Issue', blank=False, null=True,
                               verbose_name=_('Issue'),
                               related_name='coauthors')
-
+    organization = models.CharField(max_length=500, default='',
+                                    verbose_name=_('Organization'),
+                                    blank=True)
 class Article(models.Model):
     pass
 
