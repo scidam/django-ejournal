@@ -668,6 +668,36 @@ class ReviewTests(TestCase):
         self.assertTrue(Review._meta.get_field('reviewer').null)
         self.assertTrue(Review._meta.get_field('reviewer').blank)
 
+    def test_review_created_timestamp(self):
+        self.assertTrue(Review._meta.get_field('created').auto_now_add)
+
+    def test_review_has_answers(self):
+        has_answers = Answer.objects.filter(review=self.review).exists()
+        self.assertEqual(self.review.has_answers, has_answers)
+
+    def test_review_updated_timestamp(self):
+        self.assertTrue(Review._meta.get_field('updated').auto_now)
+
+    def test_review_status_type(self):
+        self.assertIsInstance(Review._meta.get_field('status'), models.CharField)
+
+    def test_review_status_choices(self):
+        CHOICES = (('AC', 'Accepted'),
+                   ('DE', 'Detailed explanation required')
+                   ('CO', 'Correction required'),
+                   ('RE', 'Rejected')
+                   )
+        self.assertEqual(Review._meta.get_field('status').choices, CHOICES)
+
+    def test_review_status_maxlen(self):
+        self.assertEqual(Review._meta.get_field('status').max_length, 2)
+
+    def test_review_status_mandatory(self):
+        self.asserTrue(Review._meta.get_field('status').blank)
+
+    def test_review_status_default(self):
+        self.asserEqual(Review._meta.get_field('status').default, 'RE')
+
 
 class AnswerTests(TestCase):
 
