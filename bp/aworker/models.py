@@ -137,12 +137,18 @@ class Issue(models.Model):
 
 @python_2_unicode_compatible
 class Review(models.Model):
+    STATUS_CHOICES = (('AC', 'Accepted'),
+                   ('DE', 'Detailed explanation required')
+                   ('CO', 'Correction required'),
+                   ('RE', 'Rejected')
+                   )
     file = models.FileField(upload_to='reviews/%Y/%m/%d/', null=True, blank=True)
     description = models.TextField(default='', blank=True, verbose_name=_('Description'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'), blank=True, default=timezone.now())
     updated = models.DateTimeField(auto_now=True, verbose_name=_('Updated'), blank=True, default=timezone.now())
     issue = models.ForeignKey(Issue, null=True, blank=True, verbose_name=_('Issue'), related_name='reviews')
     reviewer = models.ForeignKey(Reviewer, null=True, blank=True, verbose_name=_('Reviewer'), related_name='reviews')
+    status = models.CharField(blank=False, default=STATUS_CHOICES[-1][0], choices=STATUS_CHOICES, verbose_name=_('Status'), max_length=2)
 
     def __str__(self):
         res = ''
