@@ -3,7 +3,7 @@ import re
 from django import forms
 from django.utils.translation import ugettext as _
 
-from .models import Article, ArtExtra
+from .models import Article, ArtExtra, AbstractUserMixin
 
 
 doi_pat = re.compile(r'10\.\d{4,}\/bp\.\d{4}\.\d{4,}')
@@ -33,3 +33,8 @@ class ArtExtraForm(forms.ModelForm):
             if not udk_pat.match(data):
                 raise forms.ValidationError(_("Improper format of UDK"), code='invalid')
         return data
+
+
+class AbstractUserForm(forms.ModelForm):
+    class Meta:
+        model = AbstractUserMixin
