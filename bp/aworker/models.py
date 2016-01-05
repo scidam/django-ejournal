@@ -87,8 +87,13 @@ class Coauthor(models.Model):
                                   verbose_name=_('Family name'))
     thirdname = models.CharField(max_length=100, blank=True, default='',
                                  verbose_name=_('Last name'))
-    author = models.ForeignKey(AbstractUserMixin, null=True, blank=False, verbose_name=_('Author'), related_name='coauthors')
-
+    author = models.ForeignKey(AbstractUserMixin, null=True,
+                               blank=False, verbose_name=_('Author'),
+                               related_name='coauthors')
+    issue = models.ForeignKey('Issue', blank=False, null=True,
+                              verbose_name=_('Issue'),
+                              related_name='coauthors')
+    
 class Article(models.Model):
     pass
 
