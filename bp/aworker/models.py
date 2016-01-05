@@ -80,6 +80,15 @@ class Editor(AbstractUserMixin):
     pass
 
 
+class Coauthor(models.Model):
+    firstname = models.CharField(max_length=100, verbose_name=_('First name'), blank=False, default='')
+    email = models.EmailField(blank=True, unique=True, verbose_name=_('Email'), default='')
+    secondname = models.CharField(max_length=100, blank=True, default='',
+                                  verbose_name=_('Family name'))
+    thirdname = models.CharField(max_length=100, blank=True, default='',
+                                 verbose_name=_('Last name'))
+    author = models.ForeignKey(AbstractUserMixin, null=True, blank=False, verbose_name=_('Author'), related_name='coauthors')
+
 class Article(models.Model):
     pass
 
