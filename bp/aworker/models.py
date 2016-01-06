@@ -13,6 +13,12 @@ from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext as _
 
+try:
+    from django.apps.apps import get_model
+except ImportError:
+    from django.db.models.loading import get_model
+    
+
 
 @python_2_unicode_compatible
 class AbstractUserMixin(models.Model):
@@ -96,9 +102,21 @@ class Coauthor(models.Model):
     organization = models.CharField(max_length=500, default='',
                                     verbose_name=_('Organization'),
                                     blank=True)
-class Article(models.Model):
-    pass
 
+
+@python_2_unicode_compatible
+class Article(models.Model):
+    author = models.ForeignKey(AbstractUserMixin, blank=False, null=True, verbose_name=_('Author'))
+    coauthors = models.ManyToManyField(Coauthor, blank=True, null=True, verbose_name=_('Coauthors'))
+    title = models.CharField(max_length=500, blank=False, default='', verbose_name=_('Title'))
+    pub_date = models.DateField(blank=True, default=None, null=True)
+    extrainfo = models.OneToOneField('ArtExtra', blank=True, null=True, verbose_name=_('Extras'))
+    published = models.BooleanField(default=False, verbose_name=_('Published'))
+    keywords = models.CharField(blank=False, default='', max_length=settings.EJOURNAL_MAX_KEYWORDS_LENGTH, verbose_name=_('Keywords'))
+    abstract = models.CharField(blank=True, default='', max_length=settings.EJOURNAL_MAX_ABSTRACT_LENGTH, verbose_name=_('Abstract'))
+
+    def __str__(self):
+        return self.title[:30]+' ...:' + 'Published: %s'%(self.pub_date if self.pub_date else False,)
 
 @python_2_unicode_compatible
 class Invitation(models.Model):
@@ -158,6 +176,11 @@ class Review(models.Model):
                 res += ' ' + self.reviewer.secondname.strip()[0].capitalize()+'.: '
         res += str(self.updated)
         return res
+
+    @property
+    def has_answer(self):
+        ansvm = get_model(app_label='aworker',model_name='Answer')
+        return ansvm.objects.filter(review=self).exists()
 
 
 @python_2_unicode_compatible
@@ -223,7 +246,7 @@ class Vote(models.Model):
 @python_2_unicode_compatible
 class Answer(models.Model):
     attachments = models.ManyToManyField(PaperSource, related_name='answers', blank=True, null=True, verbose_name=_('Attachments'))
-    review = models.OneToOneField(Review, blank=False, null=True, verbose_name=_('Review'))
+    review = models.OneToOneField(Review, blank=False, null=True, verbose_name=_('Review'), related_name='answer')
     description = models.TextField(default='', blank=True, verbose_name=_('Description'))
     created = models.DateTimeField(auto_now_add=True, verbose_name=_('Created'))
     file = models.FileField(blank=True, null=True, verbose_name=_('File'))

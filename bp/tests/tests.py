@@ -539,7 +539,7 @@ class ArticleTests(TestCase):
     '''
 
     def setUp(self):
-        self.art = Article.objects.create(name='About winds influences on the spiritual life of the clergy?',
+        self.art = Article.objects.create(title='About winds influences on the spiritual life of the clergy?',
                                      published=True,
                                      pub_date=timezone.now(),
                                      author=Author.objects.create(firstname='John Doe', email='me@mail.com'),
@@ -558,20 +558,20 @@ class ArticleTests(TestCase):
         self.assertFalse(Article._meta.get_field('author').blank)
 
     def test_article_name_required(self):
-        self.assertFalse(Article._meta.get_field('name').blank)
-        self.assertGreater(len(self.art.name)>10)
+        self.assertFalse(Article._meta.get_field('title').blank)
+        self.assertGreater(len(self.art.title), 10)
 
     def test_article_name_maxlen(self):
-        self.assertEqual(Article._meta.get_field('name').max_length, 500)
+        self.assertEqual(Article._meta.get_field('title').max_length, 500)
 
     def test_article_name_type(self):
-        self.assertEqual(Article._meta.get_field('name'), models.CharField)
+        self.assertIsInstance(Article._meta.get_field('title'), models.CharField)
 
     def test_article_name_default(self):
-        self.assertEqual(Article._meta.get_field('name').default, '')
+        self.assertEqual(Article._meta.get_field('title').default, '')
 
     def test_article_str_method(self):
-        res = self.art.name[:30]+' ...:'+ 'Published: %s'%(self.art.pub_date if self.art.pub_date else False,)
+        res = self.art.title[:30]+' ...:'+ 'Published: %s'%(self.art.pub_date if self.art.pub_date else False,)
         self.assertEqual(str(self.art), res)
 
     def test_article_keywords_mandatory(self):
@@ -583,20 +583,23 @@ class ArticleTests(TestCase):
     def test_article_keywords_validation(self):
         art_form = ArticleForm(instance=self.art)
         self.assertFalse(art_form.is_valid())
-        bound_art_form = ArticleForm({'name': 'test', 'abstract':'Test', 'keywords':'one,two,three'}, instance=self.art)
+        bound_art_form = ArticleForm({'name': 'test', 'abstract':'Test', 'keywords':'one,two,three', 'title':'Empty',
+                                      'author':'1'}, instance=self.art)
         self.assertTrue(bound_art_form.is_valid())
-        bound_art_form = ArticleForm({'name': 'test', 'abstract':'Test', 'keywords':''}, instance=self.art)
+        bound_art_form = ArticleForm({'name': 'test', 'abstract':'Test', 'keywords':'',
+                                      'title':'None', 'author':'1'}, 
+                                     instance=self.art)
         self.assertFalse(bound_art_form.is_valid())
 
     def test_article_keywords_length(self):
         self.assertEqual(Article._meta.get_field('keywords').max_length, settings.EJOURNAL_MAX_KEYWORDS_LENGTH)
 
-    def test_article_description_length(self):
-        self.assertEqual(Article._meta.get_field('description').max_length, settings.EJOURNAL_MAX_DESCRIPTION_LENGTH)
+    def test_article_abstract_length(self):
+        self.assertEqual(Article._meta.get_field('abstract').max_length, settings.EJOURNAL_MAX_ABSTRACT_LENGTH)
 
-    def test_article_description_non_mandatory(self):
-        self.assertTrue(Article._meta.get_field('description').blank)
-        self.assertEqual(Article._meta.get_field('description').default, '')
+    def test_article_abstract_non_mandatory(self):
+        self.assertTrue(Article._meta.get_field('abstract').blank)
+        self.assertEqual(Article._meta.get_field('abstract').default, '')
 
     def test_article_pub_date_field_type(self):
         self.assertIsInstance(Article._meta.get_field('pub_date'), models.DateField)
@@ -615,9 +618,9 @@ class ArticleTests(TestCase):
         self.assertTrue(Article._meta.get_field('coauthors').blank)
 
     def test_coauthors_adding(self):
-        author = Author.objects.create(name='John', email='simple@sample.com')
-        coauthor = Coauthor.objects.create(author=author, firstname='Another', secondname='Person')
-        coauthor1 = Coauthor.objects.create(author=author, firstname='Another', secondname='Person2')
+        author = Author.objects.create(firstname='John', email='simple@sample.com')
+        coauthor = Coauthor.objects.create(author=author, firstname='Another', secondname='Person', email='git@mail.com')
+        coauthor1 = Coauthor.objects.create(author=author, firstname='Another', secondname='Person2', email='it@mail.com')
         self.art.coauthors.add(coauthor)
         self.art.coauthors.add(coauthor1)
         self.art.save()
@@ -706,8 +709,8 @@ class ReviewTests(TestCase):
         self.assertTrue(Review._meta.get_field('created').auto_now_add)
 
     def test_review_has_answers(self):
-        has_answers = Answer.objects.filter(review=self.review).exists()
-        self.assertEqual(self.review.has_answers, has_answers)
+        has_answer = Answer.objects.filter(review=self.review).exists()
+        self.assertEqual(self.review.has_answer, has_answer)
 
     def test_review_updated_timestamp(self):
         self.assertTrue(Review._meta.get_field('updated').auto_now)
