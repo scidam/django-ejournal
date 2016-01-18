@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'djangocms_teaser',
     'djangocms_video',
     'reversion',
+    'django_extensions',
     'main',
     'aworker'
 )
