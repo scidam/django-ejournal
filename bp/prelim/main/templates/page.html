@@ -1,15 +1,19 @@
 {% extends "base.html" %}
-{% load cms_tags menu_tags%}
+{% load cms_tags menu_tags sekizai_tags staticfiles%}
 {% block title %}{% page_attribute "page_title" %}{% endblock title %}
 {% block container %}
+{%addtoblock "css"%}
+<link rel="stylesheet" href="{%static "css/bp.css"%}">
+{%endaddtoblock%}
+
  <div class="row">
  	<div class="col-md-12">
- 	{% language_chooser%}
+ 	{% language_chooser "menus/language_chooser.html"%}
  	{% placeholder "header" inherit%}
  	</div>
  </div>
   <div class="row">
- 	<div class="col-md-12">{%show_breadcrumb%}</div>
+ 	<div class="col-md-12">{%show_breadcrumb 1 "menus/breadcrumb.html"%}</div>
  </div>
   <div class="row">
   	<div class="col-md-3">

@@ -1,0 +1,14 @@
+{% load i18n menu_tags staticfiles sekizai_tags%}
+{% if languages|length > 1 %}
+<ul class="l-ch-class">
+<li class="l-ch-item{% ifequal current_language "en" %} l-ch-active{% endifequal %}">
+<a href="{% page_language_url "en" %}" title="{% trans "Change to language: EN" %}">
+EN <img src="{%static 'flags/us.png'%}" alt="English"></a>
+</li>
+<li class="l-ch-item">&nbsp;</li>
+<li class="l-ch-item{% ifequal current_language "ru" %} l-ch-active{% endifequal %}">
+<a href="{% page_language_url "ru" %}" title="{% trans "Change to language: RU" %}">
+RU <img src="{%static 'flags/ru.png'%}" alt="Russian"></a>
+</li>
+</ul>
+{% endif %}

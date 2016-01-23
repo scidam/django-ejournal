@@ -1,0 +1,64 @@
+
+/*----------------------- Top common block -------------------------*/
+
+
+
+
+/*----------------------- Top common block END ---------------------*/
+
+
+
+/*----------------------- Breadcrumb block -------------------------*/
+.bcrumb-list{
+    list-style-type: none;
+    float: left;
+}
+.bcrumb-item{
+float: left;
+}
+
+/* . bcrumb-active   -this style is unused*/
+
+/*----------------------- Breadcrumb block END----------------------*/
+
+
+
+/*----------------------- Language chooser block -------------------*/
+
+/*Should be added to commong css file*/
+/*Used in language_chooser.html, template for Django cms*/
+/*Author: Dmitry E. Kislov*/
+/*E-mail: kislov@easydan.com*/
+
+.l-ch-class {
+    list-style-type: none;
+    float: right;
+    }
+    
+.l-ch-active {
+    text-decoration:None;
+}
+
+li.l-ch-active img {
+display: inline;
+}
+
+li.l-ch-active {
+	text-decoration:none;
+	border-bottom: 2px solid blue;
+}
+
+.l-ch-class a: hover{
+    text-decoration:none;
+}
+.l-ch-class a: active{
+    text-decoration:none;
+}
+.l-ch-class a: visited{
+    text-decoration:none;
+}
+
+.l-ch-item {
+float:left;
+}
+/*----------------------- Language chooser block END ----------------*/

@@ -1,0 +1,40 @@
+/*Should be added to commong css file*/
+/*Used in language_chooser.html, template for Django cms*/
+/*Author: Dmitry E. Kislov*/
+/*E-mail: kislov@easydan.com*/
+
+.l-ch-class {
+    list-style-type: none;
+    float: right;
+    }
+    
+.l-ch-active {
+    text-decoration:None;
+}
+
+
+li.l-ch-active:before {
+    /*Using a Bootstrap glyphicon as the bullet point*/
+    content: "\e080";
+    font-family: 'Glyphicons Halflings';
+    font-size: 10px;
+    float: left;
+    margin-top: 4px;
+    margin-left: -17px;
+    color: #0ACE0EC;
+}
+
+.l-ch-class a: hover{
+    text-decoration:none;
+}
+.l-ch-class a: active{
+    text-decoration:none;
+}
+.l-ch-class a: visited{
+    text-decoration:none;
+}
+
+/* Could be used too */
+.l-ch-item {
+float:left;
+}

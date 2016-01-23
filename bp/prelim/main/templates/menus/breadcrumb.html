@@ -1,0 +1,13 @@
+{%if ancestors%}
+<ul class="bcrumb-list">
+{% for ance in ancestors %}
+<li class="bcrumb-item">
+	{% if not forloop.last %}
+	<a href="{{ ance.get_absolute_url }}">{{ ance.get_menu_title }}</a> <span class="separator">&raquo;</span>
+	{% else %}
+	<span class="bcrumb-active">{{ ance.get_menu_title }}</span>
+	{% endif %}
+</li>
+{% endfor %}
+</ul>
+{%endif%}
