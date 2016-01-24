@@ -6,19 +6,20 @@
 <link rel="stylesheet" href="{%static "css/bp.css"%}">
 {%endaddtoblock%}
 
- <div class="row">
- 	<div class="col-md-12">
- 	{% language_chooser "menus/language_chooser.html"%}
- 	{% placeholder "header" inherit%}
- 	</div>
- </div>
-  <div class="row">
- 	<div class="col-md-12">{%show_breadcrumb 1 "menus/breadcrumb.html"%}</div>
+ <div class="row get-relative">
+ 	<div class="col-md-9" >
+		{% placeholder "header" inherit%}
+	</div>
+	 	<div class="col-md-3 align-bottom">
+ 		{% language_chooser "menus/language_chooser.html"%}
+ 		</div>
  </div>
   <div class="row">
   	<div class="col-md-3">
     {% placeholder "left-header" inherit%}
-    {%show_menu%}
+    <ul class="bp-menu">
+    {%show_menu 1%}
+    </ul>
     {% placeholder "left-footer" inherit%}
   	</div>
   	<div class="col-md-9">

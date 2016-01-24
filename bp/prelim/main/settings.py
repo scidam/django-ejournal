@@ -146,7 +146,8 @@ INSTALLED_APPS = (
     'djangocms_teaser',
     'djangocms_video',
     'reversion',
-    'main'
+    'main',
+    'bpblocks'
 )
 
 LANGUAGES = (
