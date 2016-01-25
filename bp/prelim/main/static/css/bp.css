@@ -11,6 +11,11 @@ bottom:0;
 right:0;
 }
 
+.plugin_picture * img {
+width: 100%;
+height: auto;
+}
+
 
 /*----------------------- Top common block -------------------------*/
 .bp-logo-top{

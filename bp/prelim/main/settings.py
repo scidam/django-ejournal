@@ -189,7 +189,59 @@ CMS_TEMPLATES = (
 
 CMS_PERMISSION = True
 
-CMS_PLACEHOLDER_CONF = {}
+CMS_PLACEHOLDER_CONF = {
+    'header': {
+        'name': gettext("Header of pages (inherited)"),
+        'language_fallback': True,
+    },
+
+    'left-header': {
+        'name': gettext("Header of the left column (inherited)"),
+        'language_fallback': True,
+    },
+
+    'left-footer': {
+        'name': gettext("Footer of the left column (inherited)"),
+        'language_fallback': True,
+    },
+
+    'right-header': {
+        'name': gettext("Header of the right column (inherited)"),
+        'language_fallback': True,
+    },
+
+    'right-content': {
+        'name': gettext("Content of the right column"),
+        'language_fallback': True,
+    },
+
+    'right-footer': {
+        'name': gettext("Footer of the right column (inherited)"),
+        'language_fallback': True,
+    },
+
+    'footer': {
+        'name': gettext("Page footer (inherited)"),
+        'language_fallback': True,
+    },
+
+}
+
+CKEDITOR_SETTINGS = {
+    'language': 'ru',
+    'toolbar_CMS' :  [['cmsplugins' ,'Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ],
+    [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ],
+    [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ],
+    [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ],
+    [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'RemoveFormat' ],
+    [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language' ],
+    [ 'Link', 'Unlink', 'Anchor' ],
+    [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ],
+    [ 'Styles', 'Format', 'Font', 'FontSize' ],
+    [ 'TextColor', 'BGColor' ],
+    [ 'Maximize', 'ShowBlocks'], [ 'About' ]],      
+    'skin': 'moono',
+}
 
 DATABASES = {
     'default': {
