@@ -1,6 +1,5 @@
 django-cms<3.2
 django-treebeard>=2.0
-
 https://github.com/divio/djangocms-admin-style/archive/master.zip?1451371113.55
 https://github.com/divio/djangocms-column/archive/master.zip?1451371113.55
 https://github.com/divio/djangocms-flash/archive/master.zip?1451371113.55
